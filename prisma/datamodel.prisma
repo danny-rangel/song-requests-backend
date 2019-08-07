@@ -1,0 +1,25 @@
+type User {
+  id: ID! @id
+  name: String!
+  email: String! @unique
+  password: String!
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
+  songs: [Song!]! @relation(link: TABLE, name: "SongToUser", onDelete: CASCADE)
+  queue: Queue @relation(link: TABLE, name: "QueueToUser", onDelete: CASCADE)
+}
+
+type Song {
+  id: ID! @id
+  name: String!
+  artist: String!
+  requestedAmount: Int!
+  createdAt: DateTime! @createdAt
+  user: User! @relation(name: "SongToUser", onDelete: SET_NULL)
+}
+
+type Queue {
+  id: ID! @id
+  songs: [Song!]!
+  user: User! @relation(name: "QueueToUser", onDelete: SET_NULL)
+}
