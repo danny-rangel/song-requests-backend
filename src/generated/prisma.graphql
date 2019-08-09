@@ -1,5 +1,13 @@
-# source: http://localhost:4466/stream-request/dev
-# timestamp: Mon Jul 01 2019 15:26:48 GMT-0700 (Pacific Daylight Time)
+# source: http://localhost:4466/stream-requests/dev
+# timestamp: Thu Aug 08 2019 17:07:12 GMT-0700 (Pacific Daylight Time)
+
+type AggregateQueueSong {
+  count: Int!
+}
+
+type AggregateSong {
+  count: Int!
+}
 
 type AggregateUser {
   count: Int!
@@ -23,11 +31,21 @@ scalar Long
 
 type Mutation {
   createUser(data: UserCreateInput!): User!
+  createSong(data: SongCreateInput!): Song!
+  createQueueSong(data: QueueSongCreateInput!): QueueSong!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateSong(data: SongUpdateInput!, where: SongWhereUniqueInput!): Song
+  updateQueueSong(data: QueueSongUpdateInput!, where: QueueSongWhereUniqueInput!): QueueSong
   deleteUser(where: UserWhereUniqueInput!): User
+  deleteSong(where: SongWhereUniqueInput!): Song
+  deleteQueueSong(where: QueueSongWhereUniqueInput!): QueueSong
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
+  upsertSong(where: SongWhereUniqueInput!, create: SongCreateInput!, update: SongUpdateInput!): Song!
+  upsertQueueSong(where: QueueSongWhereUniqueInput!, create: QueueSongCreateInput!, update: QueueSongUpdateInput!): QueueSong!
+  updateManySongs(data: SongUpdateManyMutationInput!, where: SongWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManySongs(where: SongWhereInput): BatchPayload!
+  deleteManyQueueSongs(where: QueueSongWhereInput): BatchPayload!
   executeRaw(database: PrismaDatabase, query: String!): Json!
 }
 
@@ -64,8 +82,14 @@ enum PrismaDatabase {
 
 type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  songs(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Song]!
+  queueSongs(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [QueueSong]!
   user(where: UserWhereUniqueInput!): User
+  song(where: SongWhereUniqueInput!): Song
+  queueSong(where: QueueSongWhereUniqueInput!): QueueSong
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  songsConnection(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SongConnection!
+  queueSongsConnection(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): QueueSongConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -74,85 +98,185 @@ type Query {
   ): Node
 }
 
-type Subscription {
-  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
-}
-
-type User implements Node {
+type QueueSong implements Node {
   id: ID!
-  name: String!
-  email: String!
-  password: String!
-  updatedAt: DateTime!
   createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  song: Song!
 }
 
 """A connection to a list of items."""
-type UserConnection {
+type QueueSongConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 
   """A list of edges."""
-  edges: [UserEdge]!
-  aggregate: AggregateUser!
+  edges: [QueueSongEdge]!
+  aggregate: AggregateQueueSong!
 }
 
-input UserCreateInput {
+input QueueSongCreateInput {
   id: ID
-  name: String!
-  email: String!
-  password: String!
+  user: UserCreateOneWithoutQueueInput!
+  song: SongCreateOneWithoutQueueInput!
+}
+
+input QueueSongCreateManyWithoutUserInput {
+  create: [QueueSongCreateWithoutUserInput!]
+  connect: [QueueSongWhereUniqueInput!]
+}
+
+input QueueSongCreateOneWithoutSongInput {
+  create: QueueSongCreateWithoutSongInput
+  connect: QueueSongWhereUniqueInput
+}
+
+input QueueSongCreateWithoutSongInput {
+  id: ID
+  user: UserCreateOneWithoutQueueInput!
+}
+
+input QueueSongCreateWithoutUserInput {
+  id: ID
+  song: SongCreateOneWithoutQueueInput!
 }
 
 """An edge in a connection."""
-type UserEdge {
+type QueueSongEdge {
   """The item at the end of the edge."""
-  node: User!
+  node: QueueSong!
 
   """A cursor for use in pagination."""
   cursor: String!
 }
 
-enum UserOrderByInput {
+enum QueueSongOrderByInput {
   id_ASC
   id_DESC
-  name_ASC
-  name_DESC
-  email_ASC
-  email_DESC
-  password_ASC
-  password_DESC
-  updatedAt_ASC
-  updatedAt_DESC
   createdAt_ASC
   createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
 }
 
-type UserPreviousValues {
+type QueueSongPreviousValues {
   id: ID!
-  name: String!
-  email: String!
-  password: String!
-  updatedAt: DateTime!
   createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
-type UserSubscriptionPayload {
-  mutation: MutationType!
-  node: User
-  updatedFields: [String!]
-  previousValues: UserPreviousValues
-}
-
-input UserSubscriptionWhereInput {
+input QueueSongScalarWhereInput {
   """Logical AND on all given filters."""
-  AND: [UserSubscriptionWhereInput!]
+  AND: [QueueSongScalarWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [UserSubscriptionWhereInput!]
+  OR: [QueueSongScalarWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [UserSubscriptionWhereInput!]
+  NOT: [QueueSongScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  createdAt: DateTime
+
+  """All values that are not equal to given value."""
+  createdAt_not: DateTime
+
+  """All values that are contained in given list."""
+  createdAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  createdAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  createdAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  createdAt_lte: DateTime
+
+  """All values greater than the given value."""
+  createdAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+
+  """All values that are not equal to given value."""
+  updatedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  updatedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  updatedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  updatedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  updatedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  updatedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  updatedAt_gte: DateTime
+}
+
+type QueueSongSubscriptionPayload {
+  mutation: MutationType!
+  node: QueueSong
+  updatedFields: [String!]
+  previousValues: QueueSongPreviousValues
+}
+
+input QueueSongSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [QueueSongSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [QueueSongSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [QueueSongSubscriptionWhereInput!]
 
   """The subscription event gets dispatched when it's listed in mutation_in"""
   mutation_in: [MutationType!]
@@ -171,30 +295,257 @@ input UserSubscriptionWhereInput {
   The subscription event gets only dispatched when some of the field names included in this list have been updated
   """
   updatedFields_contains_some: [String!]
-  node: UserWhereInput
+  node: QueueSongWhereInput
 }
 
-input UserUpdateInput {
-  name: String
-  email: String
-  password: String
+input QueueSongUpdateInput {
+  user: UserUpdateOneRequiredWithoutQueueInput
+  song: SongUpdateOneRequiredWithoutQueueInput
 }
 
-input UserUpdateManyMutationInput {
-  name: String
-  email: String
-  password: String
+input QueueSongUpdateManyWithoutUserInput {
+  create: [QueueSongCreateWithoutUserInput!]
+  connect: [QueueSongWhereUniqueInput!]
+  set: [QueueSongWhereUniqueInput!]
+  disconnect: [QueueSongWhereUniqueInput!]
+  delete: [QueueSongWhereUniqueInput!]
+  update: [QueueSongUpdateWithWhereUniqueWithoutUserInput!]
+  deleteMany: [QueueSongScalarWhereInput!]
+  upsert: [QueueSongUpsertWithWhereUniqueWithoutUserInput!]
 }
 
-input UserWhereInput {
+input QueueSongUpdateOneWithoutSongInput {
+  create: QueueSongCreateWithoutSongInput
+  connect: QueueSongWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: QueueSongUpdateWithoutSongDataInput
+  upsert: QueueSongUpsertWithoutSongInput
+}
+
+input QueueSongUpdateWithoutSongDataInput {
+  user: UserUpdateOneRequiredWithoutQueueInput
+}
+
+input QueueSongUpdateWithoutUserDataInput {
+  song: SongUpdateOneRequiredWithoutQueueInput
+}
+
+input QueueSongUpdateWithWhereUniqueWithoutUserInput {
+  where: QueueSongWhereUniqueInput!
+  data: QueueSongUpdateWithoutUserDataInput!
+}
+
+input QueueSongUpsertWithoutSongInput {
+  update: QueueSongUpdateWithoutSongDataInput!
+  create: QueueSongCreateWithoutSongInput!
+}
+
+input QueueSongUpsertWithWhereUniqueWithoutUserInput {
+  where: QueueSongWhereUniqueInput!
+  update: QueueSongUpdateWithoutUserDataInput!
+  create: QueueSongCreateWithoutUserInput!
+}
+
+input QueueSongWhereInput {
   """Logical AND on all given filters."""
-  AND: [UserWhereInput!]
+  AND: [QueueSongWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [UserWhereInput!]
+  OR: [QueueSongWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [UserWhereInput!]
+  NOT: [QueueSongWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  createdAt: DateTime
+
+  """All values that are not equal to given value."""
+  createdAt_not: DateTime
+
+  """All values that are contained in given list."""
+  createdAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  createdAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  createdAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  createdAt_lte: DateTime
+
+  """All values greater than the given value."""
+  createdAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+
+  """All values that are not equal to given value."""
+  updatedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  updatedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  updatedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  updatedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  updatedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  updatedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  updatedAt_gte: DateTime
+  user: UserWhereInput
+  song: SongWhereInput
+}
+
+input QueueSongWhereUniqueInput {
+  id: ID
+}
+
+type Song implements Node {
+  id: ID!
+  name: String!
+  artist: String!
+  requestedAmount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  queue: QueueSong
+}
+
+"""A connection to a list of items."""
+type SongConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [SongEdge]!
+  aggregate: AggregateSong!
+}
+
+input SongCreateInput {
+  id: ID
+  name: String!
+  artist: String!
+  requestedAmount: Int
+  user: UserCreateOneWithoutSongsInput!
+  queue: QueueSongCreateOneWithoutSongInput
+}
+
+input SongCreateManyWithoutUserInput {
+  create: [SongCreateWithoutUserInput!]
+  connect: [SongWhereUniqueInput!]
+}
+
+input SongCreateOneWithoutQueueInput {
+  create: SongCreateWithoutQueueInput
+  connect: SongWhereUniqueInput
+}
+
+input SongCreateWithoutQueueInput {
+  id: ID
+  name: String!
+  artist: String!
+  requestedAmount: Int
+  user: UserCreateOneWithoutSongsInput!
+}
+
+input SongCreateWithoutUserInput {
+  id: ID
+  name: String!
+  artist: String!
+  requestedAmount: Int
+  queue: QueueSongCreateOneWithoutSongInput
+}
+
+"""An edge in a connection."""
+type SongEdge {
+  """The item at the end of the edge."""
+  node: Song!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum SongOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  artist_ASC
+  artist_DESC
+  requestedAmount_ASC
+  requestedAmount_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type SongPreviousValues {
+  id: ID!
+  name: String!
+  artist: String!
+  requestedAmount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input SongScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [SongScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [SongScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [SongScalarWhereInput!]
   id: ID
 
   """All values that are not equal to given value."""
@@ -275,108 +626,68 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
-  email: String
+  artist: String
 
   """All values that are not equal to given value."""
-  email_not: String
+  artist_not: String
 
   """All values that are contained in given list."""
-  email_in: [String!]
+  artist_in: [String!]
 
   """All values that are not contained in given list."""
-  email_not_in: [String!]
+  artist_not_in: [String!]
 
   """All values less than the given value."""
-  email_lt: String
+  artist_lt: String
 
   """All values less than or equal the given value."""
-  email_lte: String
+  artist_lte: String
 
   """All values greater than the given value."""
-  email_gt: String
+  artist_gt: String
 
   """All values greater than or equal the given value."""
-  email_gte: String
+  artist_gte: String
 
   """All values containing the given string."""
-  email_contains: String
+  artist_contains: String
 
   """All values not containing the given string."""
-  email_not_contains: String
+  artist_not_contains: String
 
   """All values starting with the given string."""
-  email_starts_with: String
+  artist_starts_with: String
 
   """All values not starting with the given string."""
-  email_not_starts_with: String
+  artist_not_starts_with: String
 
   """All values ending with the given string."""
-  email_ends_with: String
+  artist_ends_with: String
 
   """All values not ending with the given string."""
-  email_not_ends_with: String
-  password: String
+  artist_not_ends_with: String
+  requestedAmount: Int
 
   """All values that are not equal to given value."""
-  password_not: String
+  requestedAmount_not: Int
 
   """All values that are contained in given list."""
-  password_in: [String!]
+  requestedAmount_in: [Int!]
 
   """All values that are not contained in given list."""
-  password_not_in: [String!]
+  requestedAmount_not_in: [Int!]
 
   """All values less than the given value."""
-  password_lt: String
+  requestedAmount_lt: Int
 
   """All values less than or equal the given value."""
-  password_lte: String
+  requestedAmount_lte: Int
 
   """All values greater than the given value."""
-  password_gt: String
+  requestedAmount_gt: Int
 
   """All values greater than or equal the given value."""
-  password_gte: String
-
-  """All values containing the given string."""
-  password_contains: String
-
-  """All values not containing the given string."""
-  password_not_contains: String
-
-  """All values starting with the given string."""
-  password_starts_with: String
-
-  """All values not starting with the given string."""
-  password_not_starts_with: String
-
-  """All values ending with the given string."""
-  password_ends_with: String
-
-  """All values not ending with the given string."""
-  password_not_ends_with: String
-  updatedAt: DateTime
-
-  """All values that are not equal to given value."""
-  updatedAt_not: DateTime
-
-  """All values that are contained in given list."""
-  updatedAt_in: [DateTime!]
-
-  """All values that are not contained in given list."""
-  updatedAt_not_in: [DateTime!]
-
-  """All values less than the given value."""
-  updatedAt_lt: DateTime
-
-  """All values less than or equal the given value."""
-  updatedAt_lte: DateTime
-
-  """All values greater than the given value."""
-  updatedAt_gt: DateTime
-
-  """All values greater than or equal the given value."""
-  updatedAt_gte: DateTime
+  requestedAmount_gte: Int
   createdAt: DateTime
 
   """All values that are not equal to given value."""
@@ -399,9 +710,593 @@ input UserWhereInput {
 
   """All values greater than or equal the given value."""
   createdAt_gte: DateTime
+  updatedAt: DateTime
+
+  """All values that are not equal to given value."""
+  updatedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  updatedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  updatedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  updatedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  updatedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  updatedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  updatedAt_gte: DateTime
+}
+
+type SongSubscriptionPayload {
+  mutation: MutationType!
+  node: Song
+  updatedFields: [String!]
+  previousValues: SongPreviousValues
+}
+
+input SongSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [SongSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [SongSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [SongSubscriptionWhereInput!]
+
+  """The subscription event gets dispatched when it's listed in mutation_in"""
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: SongWhereInput
+}
+
+input SongUpdateInput {
+  name: String
+  artist: String
+  requestedAmount: Int
+  user: UserUpdateOneRequiredWithoutSongsInput
+  queue: QueueSongUpdateOneWithoutSongInput
+}
+
+input SongUpdateManyDataInput {
+  name: String
+  artist: String
+  requestedAmount: Int
+}
+
+input SongUpdateManyMutationInput {
+  name: String
+  artist: String
+  requestedAmount: Int
+}
+
+input SongUpdateManyWithoutUserInput {
+  create: [SongCreateWithoutUserInput!]
+  connect: [SongWhereUniqueInput!]
+  set: [SongWhereUniqueInput!]
+  disconnect: [SongWhereUniqueInput!]
+  delete: [SongWhereUniqueInput!]
+  update: [SongUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [SongUpdateManyWithWhereNestedInput!]
+  deleteMany: [SongScalarWhereInput!]
+  upsert: [SongUpsertWithWhereUniqueWithoutUserInput!]
+}
+
+input SongUpdateManyWithWhereNestedInput {
+  where: SongScalarWhereInput!
+  data: SongUpdateManyDataInput!
+}
+
+input SongUpdateOneRequiredWithoutQueueInput {
+  create: SongCreateWithoutQueueInput
+  connect: SongWhereUniqueInput
+  update: SongUpdateWithoutQueueDataInput
+  upsert: SongUpsertWithoutQueueInput
+}
+
+input SongUpdateWithoutQueueDataInput {
+  name: String
+  artist: String
+  requestedAmount: Int
+  user: UserUpdateOneRequiredWithoutSongsInput
+}
+
+input SongUpdateWithoutUserDataInput {
+  name: String
+  artist: String
+  requestedAmount: Int
+  queue: QueueSongUpdateOneWithoutSongInput
+}
+
+input SongUpdateWithWhereUniqueWithoutUserInput {
+  where: SongWhereUniqueInput!
+  data: SongUpdateWithoutUserDataInput!
+}
+
+input SongUpsertWithoutQueueInput {
+  update: SongUpdateWithoutQueueDataInput!
+  create: SongCreateWithoutQueueInput!
+}
+
+input SongUpsertWithWhereUniqueWithoutUserInput {
+  where: SongWhereUniqueInput!
+  update: SongUpdateWithoutUserDataInput!
+  create: SongCreateWithoutUserInput!
+}
+
+input SongWhereInput {
+  """Logical AND on all given filters."""
+  AND: [SongWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [SongWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [SongWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  artist: String
+
+  """All values that are not equal to given value."""
+  artist_not: String
+
+  """All values that are contained in given list."""
+  artist_in: [String!]
+
+  """All values that are not contained in given list."""
+  artist_not_in: [String!]
+
+  """All values less than the given value."""
+  artist_lt: String
+
+  """All values less than or equal the given value."""
+  artist_lte: String
+
+  """All values greater than the given value."""
+  artist_gt: String
+
+  """All values greater than or equal the given value."""
+  artist_gte: String
+
+  """All values containing the given string."""
+  artist_contains: String
+
+  """All values not containing the given string."""
+  artist_not_contains: String
+
+  """All values starting with the given string."""
+  artist_starts_with: String
+
+  """All values not starting with the given string."""
+  artist_not_starts_with: String
+
+  """All values ending with the given string."""
+  artist_ends_with: String
+
+  """All values not ending with the given string."""
+  artist_not_ends_with: String
+  requestedAmount: Int
+
+  """All values that are not equal to given value."""
+  requestedAmount_not: Int
+
+  """All values that are contained in given list."""
+  requestedAmount_in: [Int!]
+
+  """All values that are not contained in given list."""
+  requestedAmount_not_in: [Int!]
+
+  """All values less than the given value."""
+  requestedAmount_lt: Int
+
+  """All values less than or equal the given value."""
+  requestedAmount_lte: Int
+
+  """All values greater than the given value."""
+  requestedAmount_gt: Int
+
+  """All values greater than or equal the given value."""
+  requestedAmount_gte: Int
+  createdAt: DateTime
+
+  """All values that are not equal to given value."""
+  createdAt_not: DateTime
+
+  """All values that are contained in given list."""
+  createdAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  createdAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  createdAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  createdAt_lte: DateTime
+
+  """All values greater than the given value."""
+  createdAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+
+  """All values that are not equal to given value."""
+  updatedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  updatedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  updatedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  updatedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  updatedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  updatedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  updatedAt_gte: DateTime
+  user: UserWhereInput
+  queue: QueueSongWhereInput
+}
+
+input SongWhereUniqueInput {
+  id: ID
+}
+
+type Subscription {
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  song(where: SongSubscriptionWhereInput): SongSubscriptionPayload
+  queueSong(where: QueueSongSubscriptionWhereInput): QueueSongSubscriptionPayload
+}
+
+type User implements Node {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  songs(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Song!]
+  queue(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [QueueSong!]
+}
+
+"""A connection to a list of items."""
+type UserConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [UserEdge]!
+  aggregate: AggregateUser!
+}
+
+input UserCreateInput {
+  id: ID
+  songs: SongCreateManyWithoutUserInput
+  queue: QueueSongCreateManyWithoutUserInput
+}
+
+input UserCreateOneWithoutQueueInput {
+  create: UserCreateWithoutQueueInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutSongsInput {
+  create: UserCreateWithoutSongsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutQueueInput {
+  id: ID
+  songs: SongCreateManyWithoutUserInput
+}
+
+input UserCreateWithoutSongsInput {
+  id: ID
+  queue: QueueSongCreateManyWithoutUserInput
+}
+
+"""An edge in a connection."""
+type UserEdge {
+  """The item at the end of the edge."""
+  node: User!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum UserOrderByInput {
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type UserPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type UserSubscriptionPayload {
+  mutation: MutationType!
+  node: User
+  updatedFields: [String!]
+  previousValues: UserPreviousValues
+}
+
+input UserSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [UserSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [UserSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [UserSubscriptionWhereInput!]
+
+  """The subscription event gets dispatched when it's listed in mutation_in"""
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: UserWhereInput
+}
+
+input UserUpdateInput {
+  songs: SongUpdateManyWithoutUserInput
+  queue: QueueSongUpdateManyWithoutUserInput
+}
+
+input UserUpdateOneRequiredWithoutQueueInput {
+  create: UserCreateWithoutQueueInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateWithoutQueueDataInput
+  upsert: UserUpsertWithoutQueueInput
+}
+
+input UserUpdateOneRequiredWithoutSongsInput {
+  create: UserCreateWithoutSongsInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateWithoutSongsDataInput
+  upsert: UserUpsertWithoutSongsInput
+}
+
+input UserUpdateWithoutQueueDataInput {
+  songs: SongUpdateManyWithoutUserInput
+}
+
+input UserUpdateWithoutSongsDataInput {
+  queue: QueueSongUpdateManyWithoutUserInput
+}
+
+input UserUpsertWithoutQueueInput {
+  update: UserUpdateWithoutQueueDataInput!
+  create: UserCreateWithoutQueueInput!
+}
+
+input UserUpsertWithoutSongsInput {
+  update: UserUpdateWithoutSongsDataInput!
+  create: UserCreateWithoutSongsInput!
+}
+
+input UserWhereInput {
+  """Logical AND on all given filters."""
+  AND: [UserWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [UserWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [UserWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  createdAt: DateTime
+
+  """All values that are not equal to given value."""
+  createdAt_not: DateTime
+
+  """All values that are contained in given list."""
+  createdAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  createdAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  createdAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  createdAt_lte: DateTime
+
+  """All values greater than the given value."""
+  createdAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+
+  """All values that are not equal to given value."""
+  updatedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  updatedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  updatedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  updatedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  updatedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  updatedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  updatedAt_gte: DateTime
+  songs_every: SongWhereInput
+  songs_some: SongWhereInput
+  songs_none: SongWhereInput
+  queue_every: QueueSongWhereInput
+  queue_some: QueueSongWhereInput
+  queue_none: QueueSongWhereInput
 }
 
 input UserWhereUniqueInput {
   id: ID
-  email: String
 }

@@ -1,25 +1,26 @@
 type User {
   id: ID! @id
-  name: String!
-  email: String! @unique
-  password: String!
-  updatedAt: DateTime! @updatedAt
   createdAt: DateTime! @createdAt
-  songs: [Song!]! @relation(link: TABLE, name: "SongToUser", onDelete: CASCADE)
-  queue: Queue @relation(link: TABLE, name: "QueueToUser", onDelete: CASCADE)
+  updatedAt: DateTime! @updatedAt
+  songs: [Song!] @relation(name: "SongToUser", onDelete: CASCADE)
+  queue: [QueueSong!] @relation(name: "QueueSongToUser", onDelete: CASCADE)
 }
 
 type Song {
   id: ID! @id
   name: String!
   artist: String!
-  requestedAmount: Int!
+  requestedAmount: Int! @default(value: 0)
   createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
   user: User! @relation(name: "SongToUser", onDelete: SET_NULL)
+  queue: QueueSong @relation(name: "SongToQueue", onDelete: CASCADE)
 }
 
-type Queue {
+type QueueSong {
   id: ID! @id
-  songs: [Song!]!
-  user: User! @relation(name: "QueueToUser", onDelete: SET_NULL)
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  user: User! @relation(link: INLINE, name: "QueueSongToUser", onDelete: SET_NULL)
+  song: Song! @relation(link: INLINE, name: "SongToQueue", onDelete: SET_NULL)
 }

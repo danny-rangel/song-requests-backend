@@ -8,41 +8,31 @@ type Query {
         after: String
         orderBy: UserOrderByInput
     ): [User!]!
+    user(id: ID!): User!
     me: User!
 }
 
 type Mutation {
-    createUser(data: CreateUserInput!): AuthPayload!
-    createSong(data: CreateSongInput!): Song!
-    login(data: LoginUserInput!): AuthPayload!
+    login: AuthPayload!
     deleteUser: User!
-    updateUser(data: UpdateUserInput!): User!
+    createSong(data: CreateSongInput!): Song!
+    addSongToQueue(songId: String!): QueueSong!
+    deleteAllSongsInQueue: BatchPayload!
+    deleteSongInQueue(queueId: String!): QueueSong!
+    deleteSong(songId: String!): User!
+    updateSong(data: UpdateSongInput!): User!
 }
 
-type Subscription {
-    queue(userId: ID!): Queue!
-}
+# type Subscription {
+# }
 
 type AuthPayload {
     token: String!
     user: User!
 }
 
-input CreateUserInput {
-    name: String!
-    email: String!
-    password: String!
-}
-
-input LoginUserInput {
-    email: String!
-    password: String!
-}
-
-input UpdateUserInput {
-    name: String
-    email: String
-    password: String
+type BatchPayload {
+    count: Long!
 }
 
 input CreateSongInput {
@@ -50,15 +40,18 @@ input CreateSongInput {
     artist: String!
 }
 
+input UpdateSongInput {
+    songId: String!
+    name: String!
+    artist: String!
+}
+
 type User {
     id: ID!
-    name: String!
-    email: String
-    password: String!
-    updatedAt: String!
-    createdAt: String!
-    songs: [Song!]!
-    queue: Queue!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    songs: [Song!]
+    queue: [QueueSong!]
 }
 
 type Song {
@@ -67,22 +60,20 @@ type Song {
     artist: String!
     requestedAmount: Int!
     createdAt: DateTime!
+    updatedAt: DateTime!
     user: User!
 }
 
-type Queue {
+type QueueSong {
     id: ID!
-    songs: [Song!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     user: User!
+    song: Song!
 }
 
 enum MutationType {
     CREATED
     UPDATED
     DELETED
-}
-
-type QueueSubscriptionPayload {
-    mutation: MutationType!
-    node: Queue
 }

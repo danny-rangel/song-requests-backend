@@ -1,74 +1,156 @@
-import bcrypt from 'bcryptjs';
-import hashPassword from '../utils/hashPassword';
-import getUserId from '../utils/getUserId';
-import generateToken from '../utils/generateToken';
+import getUserInfo from '../utils/getUserInfo';
 
 const Mutation = {
-    async createUser(parent, args, { prisma }, info) {
-        const emailTaken = await prisma.exists.User({ email: args.data.email });
+    async login(parent, args, { prisma, request }, info) {
+        const userInfo = getUserInfo(request);
+        const userId = userInfo.decoded.user_id;
 
-        if (emailTaken) {
-            throw new Error('Email taken!');
-        }
+        if (userInfo.decoded.role === 'broadcaster') {
+            const userExists = await prisma.exists.User({ id: userId });
 
-        const password = await hashPassword(args.data.password);
+            if (!userExists) {
+                const user = await prisma.mutation.createUser({
+                    data: {
+                        id: userId
+                    }
+                });
 
-        const user = await prisma.mutation.createUser({
-            data: {
-                ...args.data,
-                password
+                return {
+                    token: userInfo.token,
+                    user
+                };
+            } else {
+                const existingUser = await prisma.query.user({
+                    where: { id: userId }
+                });
+
+                return {
+                    token: userInfo.token,
+                    user: existingUser
+                };
             }
-        });
-
-        return {
-            user,
-            token: generateToken(user.id)
-        };
-    },
-    async login(
-        parent,
-        {
-            data: { email, password }
-        },
-        { prisma },
-        info
-    ) {
-        const user = await prisma.query.user({ where: { email } });
-        const match = await bcrypt.compare(password, user.password);
-
-        if (!match) {
-            throw new Error('Unable to login!');
         }
-
-        return {
-            user,
-            token: generateToken(user.id)
-        };
     },
-    async deleteUser(parent, args, { prisma, request }, info) {
-        const userId = getUserId(request);
+    deleteUser(parent, args, { prisma, request }, info) {
+        const userInfo = getUserInfo(request);
+        const userId = userInfo.decoded.user_id;
 
         return prisma.mutation.deleteUser({ where: { id: userId } }, info);
     },
-    async updateUser(parent, args, { prisma, request }, info) {
-        const userId = getUserId(request);
+    createSong(parent, { data }, { prisma, request }, info) {
+        const userInfo = getUserInfo(request);
+        const userId = userInfo.decoded.user_id;
 
-        if (typeof args.data.password === 'string') {
-            args.data.password = await hashPassword(args.data.password);
-        }
-
-        return prisma.mutation.updateUser(
+        return prisma.mutation.createSong(
             {
-                where: {
-                    id: userId
-                },
-                data: args.data
+                data: {
+                    name: data.name,
+                    artist: data.artist,
+                    requestedAmount: 0,
+                    user: {
+                        connect: {
+                            id: userId
+                        }
+                    }
+                }
             },
             info
         );
     },
-    async createSong(parent, args, ctx, info) {
-        return;
+    addSongToQueue(parent, { songId }, { prisma, request }, info) {
+        const userInfo = getUserInfo(request);
+        const userId = userInfo.decoded.user_id;
+
+        // check if song is in queue already
+
+        return prisma.mutation.createQueueSong(
+            {
+                data: {
+                    user: {
+                        connect: {
+                            id: userId
+                        }
+                    },
+                    song: {
+                        connect: {
+                            id: songId
+                        }
+                    }
+                }
+            },
+            info
+        );
+    },
+    deleteAllSongsInQueue(parent, args, { prisma, request }, info) {
+        const userInfo = getUserInfo(request);
+        const userId = userInfo.decoded.user_id;
+
+        return prisma.mutation.deleteManyQueueSongs(
+            {
+                where: {
+                    user: {
+                        id: userId
+                    }
+                }
+            },
+            info
+        );
+    },
+    deleteSongInQueue(parent, { queueId }, { prisma }, info) {
+        return prisma.mutation.deleteQueueSong(
+            {
+                where: {
+                    id: queueId
+                }
+            },
+            info
+        );
+    },
+    deleteSong(parent, { songId }, { prisma, request }, info) {
+        const userInfo = getUserInfo(request);
+        const userId = userInfo.decoded.user_id;
+
+        return prisma.mutation.updateUser(
+            {
+                data: {
+                    songs: {
+                        delete: {
+                            id: songId
+                        }
+                    }
+                },
+                where: {
+                    id: userId
+                }
+            },
+            info
+        );
+    },
+    updateSong(parent, { data }, { prisma, request }, info) {
+        const userInfo = getUserInfo(request);
+        const userId = userInfo.decoded.user_id;
+
+        return prisma.mutation.updateUser(
+            {
+                data: {
+                    songs: {
+                        update: {
+                            where: {
+                                id: data.songId
+                            },
+                            data: {
+                                name: data.name,
+                                artist: data.artist
+                            }
+                        }
+                    }
+                },
+                where: {
+                    id: userId
+                }
+            },
+            info
+        );
     }
 };
 
