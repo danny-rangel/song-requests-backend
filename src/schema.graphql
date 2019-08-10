@@ -1,19 +1,18 @@
 # import UserOrderByInput from './generated/prisma.graphql'
 
 type Query {
-    users(
-        query: String
-        first: Int
-        skip: Int
-        after: String
-        orderBy: UserOrderByInput
-    ): [User!]!
+    # users(
+    #     query: String
+    #     first: Int
+    #     skip: Int
+    #     after: String
+    #     orderBy: UserOrderByInput
+    # ): [User!]!
     user(id: ID!): User!
-    me: User!
+    me: AuthPayload!
 }
 
 type Mutation {
-    login: AuthPayload!
     deleteUser: User!
     createSong(data: CreateSongInput!): Song!
     addSongToQueue(songId: String!): QueueSong!

@@ -9,6 +9,36 @@ const Query = {
             };
         }
         return prisma.query.user(operationArgs, info);
+    },
+    async me(parent, args, { prisma, request }, info) {
+        const userInfo = getUserInfo(request);
+        const userId = userInfo.decoded.user_id;
+
+        if (userInfo.decoded.role === 'broadcaster') {
+            const userExists = await prisma.exists.User({ id: userId });
+
+            if (!userExists) {
+                const user = await prisma.mutation.createUser({
+                    data: {
+                        id: userId
+                    }
+                });
+
+                return {
+                    token: userInfo.token,
+                    user
+                };
+            } else {
+                const existingUser = await prisma.query.user({
+                    where: { id: userId }
+                });
+
+                return {
+                    token: userInfo.token,
+                    user: existingUser
+                };
+            }
+        }
     }
     // users(parent, args, { prisma }, info) {
     //     const operationArgs = {
@@ -28,14 +58,6 @@ const Query = {
     //     }
     //     return prisma.query.users(operationArgs, info);
     // },
-    // me(parent, args, { prisma, request }, info) {
-    //     const userId = getUserInfo(request);
-    //     return prisma.query.user({
-    //         where: {
-    //             id: userId
-    //         }
-    //     });
-    // }
 };
 
 export { Query as default };
