@@ -22,13 +22,14 @@ const Query = {
                 const broadcaster = await prisma.mutation.createBroadcaster({
                     data: {
                         id: userInfo.user_id,
-                        isMod: true
+                        isMod: userInfo.isMod
                     }
                 });
 
                 return {
                     token,
-                    broadcaster
+                    broadcaster,
+                    channelId: userInfo.channel_id
                 };
             } else {
                 const broadcaster = await prisma.query.broadcaster({
@@ -37,7 +38,8 @@ const Query = {
 
                 return {
                     token,
-                    broadcaster
+                    broadcaster,
+                    channelId: userInfo.channel_id
                 };
             }
         } else {
@@ -45,12 +47,13 @@ const Query = {
                 id: userInfo.opaque_user_id,
                 userId: userInfo.user_id,
                 role: userInfo.role,
-                isMod: false,
+                isMod: userInfo.isMod,
                 hasSharedId: userInfo.hasSharedId
             };
             return {
                 token,
-                user
+                user,
+                channelId: userInfo.channel_id
             };
         }
     }

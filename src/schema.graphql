@@ -29,6 +29,7 @@ type AuthPayload {
     token: String!
     broadcaster: Broadcaster
     user: User
+    channelId: String!
 }
 
 type BatchPayload {
