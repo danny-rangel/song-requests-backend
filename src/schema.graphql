@@ -8,18 +8,18 @@ type Query {
     #     after: String
     #     orderBy: UserOrderByInput
     # ): [User!]!
-    user(id: ID!): User!
+    broadcaster(id: ID!): Broadcaster!
     me: AuthPayload!
 }
 
 type Mutation {
-    deleteUser: User!
+    deleteBroadcaster: Broadcaster!
     createSong(data: CreateSongInput!): Song!
     addSongToQueue(songId: String!): QueueSong!
     deleteAllSongsInQueue: BatchPayload!
     deleteSongInQueue(queueId: String!): QueueSong!
-    deleteSong(songId: String!): User!
-    updateSong(data: UpdateSongInput!): User!
+    deleteSong(songId: String!): Broadcaster!
+    updateSong(data: UpdateSongInput!): Broadcaster!
 }
 
 # type Subscription {
@@ -27,7 +27,8 @@ type Mutation {
 
 type AuthPayload {
     token: String!
-    user: User!
+    broadcaster: Broadcaster
+    user: User
 }
 
 type BatchPayload {
@@ -35,39 +36,49 @@ type BatchPayload {
 }
 
 input CreateSongInput {
-    name: String!
+    title: String!
     artist: String!
 }
 
 input UpdateSongInput {
     songId: String!
-    name: String!
-    artist: String!
+    title: String
+    artist: String
 }
 
-type User {
+type Broadcaster {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    isMod: Boolean!
     songs: [Song!]
     queue: [QueueSong!]
 }
 
+type User {
+    id: ID!
+    userId: String
+    isMod: Boolean!
+    hasSharedId: Boolean!
+    role: String!
+    opaqueUserId: String!
+}
+
 type Song {
     id: ID!
-    name: String!
+    title: String!
     artist: String!
     requestedAmount: Int!
     createdAt: DateTime!
     updatedAt: DateTime!
-    user: User!
+    broadcaster: Broadcaster!
 }
 
 type QueueSong {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    user: User!
+    broadcaster: Broadcaster!
     song: Song!
 }
 

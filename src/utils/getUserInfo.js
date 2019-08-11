@@ -6,9 +6,28 @@ const getUserInfo = (request, requireAuth = true) => {
     if (header) {
         const token = header.replace('Bearer ', '');
         const secret = Buffer.from(process.env.JWT_SECRET, 'base64');
-        const decoded = jwt.verify(token, secret);
+        const { opaque_user_id, role, user_id } = jwt.verify(token, secret);
+        let isMod = false;
+        let hasSharedId = false;
+
+        if (role === 'broadcaster' || role === 'moderator') {
+            isMod = true;
+        }
+
+        if (user_id) {
+            hasSharedId = true;
+        }
+
+        const userInfo = {
+            role,
+            user_id,
+            opaque_user_id,
+            isMod,
+            hasSharedId
+        };
+
         return {
-            decoded,
+            userInfo,
             token
         };
     }

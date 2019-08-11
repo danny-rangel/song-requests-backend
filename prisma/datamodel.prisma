@@ -1,19 +1,20 @@
-type User {
+type Broadcaster {
   id: ID! @id
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
-  songs: [Song!] @relation(name: "SongToUser", onDelete: CASCADE)
-  queue: [QueueSong!] @relation(name: "QueueSongToUser", onDelete: CASCADE)
+  isMod: Boolean! @default(value: false)
+  songs: [Song!] @relation(name: "SongToBroadcaster", onDelete: CASCADE)
+  queue: [QueueSong!] @relation(name: "QueueSongToBroadcaster", onDelete: CASCADE)
 }
 
 type Song {
   id: ID! @id
-  name: String!
+  title: String!
   artist: String!
   requestedAmount: Int! @default(value: 0)
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
-  user: User! @relation(name: "SongToUser", onDelete: SET_NULL)
+  broadcaster: Broadcaster! @relation(name: "SongToBroadcaster", onDelete: SET_NULL)
   queue: QueueSong @relation(name: "SongToQueue", onDelete: CASCADE)
 }
 
@@ -21,6 +22,14 @@ type QueueSong {
   id: ID! @id
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
-  user: User! @relation(link: INLINE, name: "QueueSongToUser", onDelete: SET_NULL)
+  broadcaster: Broadcaster! @relation(link: INLINE, name: "QueueSongToBroadcaster", onDelete: SET_NULL)
   song: Song! @relation(link: INLINE, name: "SongToQueue", onDelete: SET_NULL)
+}
+
+type User {
+  id: ID! @id
+  userId: String
+  isMod: Boolean! @default(value: false)
+  hasSharedId: Boolean! @default(value: false)
+  role: String!
 }

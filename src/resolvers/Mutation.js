@@ -1,25 +1,26 @@
 import getUserInfo from '../utils/getUserInfo';
 
 const Mutation = {
-    deleteUser(parent, args, { prisma, request }, info) {
-        const userInfo = getUserInfo(request);
-        const userId = userInfo.decoded.user_id;
+    deleteBroadcaster(parent, args, { prisma, request }, info) {
+        const { userInfo, token } = getUserInfo(request);
 
-        return prisma.mutation.deleteUser({ where: { id: userId } }, info);
+        return prisma.mutation.deleteBroadcaster(
+            { where: { id: userInfo.user_id } },
+            info
+        );
     },
     createSong(parent, { data }, { prisma, request }, info) {
-        const userInfo = getUserInfo(request);
-        const userId = userInfo.decoded.user_id;
+        const { userInfo, token } = getUserInfo(request);
 
         return prisma.mutation.createSong(
             {
                 data: {
-                    name: data.name,
+                    title: data.title,
                     artist: data.artist,
                     requestedAmount: 0,
-                    user: {
+                    broadcaster: {
                         connect: {
-                            id: userId
+                            id: userInfo.user_id
                         }
                     }
                 }
@@ -28,17 +29,16 @@ const Mutation = {
         );
     },
     addSongToQueue(parent, { songId }, { prisma, request }, info) {
-        const userInfo = getUserInfo(request);
-        const userId = userInfo.decoded.user_id;
+        const { userInfo, token } = getUserInfo(request);
 
         // check if song is in queue already
 
         return prisma.mutation.createQueueSong(
             {
                 data: {
-                    user: {
+                    broadcaster: {
                         connect: {
-                            id: userId
+                            id: userInfo.user_id
                         }
                     },
                     song: {
@@ -52,14 +52,13 @@ const Mutation = {
         );
     },
     deleteAllSongsInQueue(parent, args, { prisma, request }, info) {
-        const userInfo = getUserInfo(request);
-        const userId = userInfo.decoded.user_id;
+        const { userInfo, token } = getUserInfo(request);
 
         return prisma.mutation.deleteManyQueueSongs(
             {
                 where: {
-                    user: {
-                        id: userId
+                    broadcaster: {
+                        id: userInfo.user_id
                     }
                 }
             },
@@ -77,10 +76,9 @@ const Mutation = {
         );
     },
     deleteSong(parent, { songId }, { prisma, request }, info) {
-        const userInfo = getUserInfo(request);
-        const userId = userInfo.decoded.user_id;
+        const { userInfo, token } = getUserInfo(request);
 
-        return prisma.mutation.updateUser(
+        return prisma.mutation.updateBroadcaster(
             {
                 data: {
                     songs: {
@@ -90,17 +88,16 @@ const Mutation = {
                     }
                 },
                 where: {
-                    id: userId
+                    id: userInfo.user_id
                 }
             },
             info
         );
     },
     updateSong(parent, { data }, { prisma, request }, info) {
-        const userInfo = getUserInfo(request);
-        const userId = userInfo.decoded.user_id;
+        const { userInfo, token } = getUserInfo(request);
 
-        return prisma.mutation.updateUser(
+        return prisma.mutation.updateBroadcaster(
             {
                 data: {
                     songs: {
@@ -109,14 +106,14 @@ const Mutation = {
                                 id: data.songId
                             },
                             data: {
-                                name: data.name,
+                                title: data.title,
                                 artist: data.artist
                             }
                         }
                     }
                 },
                 where: {
-                    id: userId
+                    id: userInfo.user_id
                 }
             },
             info

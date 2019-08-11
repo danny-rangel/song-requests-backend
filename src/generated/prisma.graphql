@@ -1,5 +1,9 @@
 # source: http://localhost:4466/stream-requests/dev
-# timestamp: Thu Aug 08 2019 17:07:12 GMT-0700 (Pacific Daylight Time)
+# timestamp: Sat Aug 10 2019 18:18:56 GMT-0700 (Pacific Daylight Time)
+
+type AggregateBroadcaster {
+  count: Int!
+}
 
 type AggregateQueueSong {
   count: Int!
@@ -18,6 +22,271 @@ type BatchPayload {
   count: Long!
 }
 
+type Broadcaster implements Node {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  isMod: Boolean!
+  songs(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Song!]
+  queue(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [QueueSong!]
+}
+
+"""A connection to a list of items."""
+type BroadcasterConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [BroadcasterEdge]!
+  aggregate: AggregateBroadcaster!
+}
+
+input BroadcasterCreateInput {
+  id: ID
+  isMod: Boolean
+  songs: SongCreateManyWithoutBroadcasterInput
+  queue: QueueSongCreateManyWithoutBroadcasterInput
+}
+
+input BroadcasterCreateOneWithoutQueueInput {
+  create: BroadcasterCreateWithoutQueueInput
+  connect: BroadcasterWhereUniqueInput
+}
+
+input BroadcasterCreateOneWithoutSongsInput {
+  create: BroadcasterCreateWithoutSongsInput
+  connect: BroadcasterWhereUniqueInput
+}
+
+input BroadcasterCreateWithoutQueueInput {
+  id: ID
+  isMod: Boolean
+  songs: SongCreateManyWithoutBroadcasterInput
+}
+
+input BroadcasterCreateWithoutSongsInput {
+  id: ID
+  isMod: Boolean
+  queue: QueueSongCreateManyWithoutBroadcasterInput
+}
+
+"""An edge in a connection."""
+type BroadcasterEdge {
+  """The item at the end of the edge."""
+  node: Broadcaster!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum BroadcasterOrderByInput {
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  isMod_ASC
+  isMod_DESC
+}
+
+type BroadcasterPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  isMod: Boolean!
+}
+
+type BroadcasterSubscriptionPayload {
+  mutation: MutationType!
+  node: Broadcaster
+  updatedFields: [String!]
+  previousValues: BroadcasterPreviousValues
+}
+
+input BroadcasterSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [BroadcasterSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [BroadcasterSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [BroadcasterSubscriptionWhereInput!]
+
+  """The subscription event gets dispatched when it's listed in mutation_in"""
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: BroadcasterWhereInput
+}
+
+input BroadcasterUpdateInput {
+  isMod: Boolean
+  songs: SongUpdateManyWithoutBroadcasterInput
+  queue: QueueSongUpdateManyWithoutBroadcasterInput
+}
+
+input BroadcasterUpdateManyMutationInput {
+  isMod: Boolean
+}
+
+input BroadcasterUpdateOneRequiredWithoutQueueInput {
+  create: BroadcasterCreateWithoutQueueInput
+  connect: BroadcasterWhereUniqueInput
+  update: BroadcasterUpdateWithoutQueueDataInput
+  upsert: BroadcasterUpsertWithoutQueueInput
+}
+
+input BroadcasterUpdateOneRequiredWithoutSongsInput {
+  create: BroadcasterCreateWithoutSongsInput
+  connect: BroadcasterWhereUniqueInput
+  update: BroadcasterUpdateWithoutSongsDataInput
+  upsert: BroadcasterUpsertWithoutSongsInput
+}
+
+input BroadcasterUpdateWithoutQueueDataInput {
+  isMod: Boolean
+  songs: SongUpdateManyWithoutBroadcasterInput
+}
+
+input BroadcasterUpdateWithoutSongsDataInput {
+  isMod: Boolean
+  queue: QueueSongUpdateManyWithoutBroadcasterInput
+}
+
+input BroadcasterUpsertWithoutQueueInput {
+  update: BroadcasterUpdateWithoutQueueDataInput!
+  create: BroadcasterCreateWithoutQueueInput!
+}
+
+input BroadcasterUpsertWithoutSongsInput {
+  update: BroadcasterUpdateWithoutSongsDataInput!
+  create: BroadcasterCreateWithoutSongsInput!
+}
+
+input BroadcasterWhereInput {
+  """Logical AND on all given filters."""
+  AND: [BroadcasterWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [BroadcasterWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [BroadcasterWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  createdAt: DateTime
+
+  """All values that are not equal to given value."""
+  createdAt_not: DateTime
+
+  """All values that are contained in given list."""
+  createdAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  createdAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  createdAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  createdAt_lte: DateTime
+
+  """All values greater than the given value."""
+  createdAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+
+  """All values that are not equal to given value."""
+  updatedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  updatedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  updatedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  updatedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  updatedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  updatedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  updatedAt_gte: DateTime
+  isMod: Boolean
+
+  """All values that are not equal to given value."""
+  isMod_not: Boolean
+  songs_every: SongWhereInput
+  songs_some: SongWhereInput
+  songs_none: SongWhereInput
+  queue_every: QueueSongWhereInput
+  queue_some: QueueSongWhereInput
+  queue_none: QueueSongWhereInput
+}
+
+input BroadcasterWhereUniqueInput {
+  id: ID
+}
+
 scalar DateTime
 
 """Raw JSON value"""
@@ -30,22 +299,29 @@ Long can represent values between -(2^63) and 2^63 - 1.
 scalar Long
 
 type Mutation {
-  createUser(data: UserCreateInput!): User!
+  createBroadcaster(data: BroadcasterCreateInput!): Broadcaster!
   createSong(data: SongCreateInput!): Song!
   createQueueSong(data: QueueSongCreateInput!): QueueSong!
-  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  createUser(data: UserCreateInput!): User!
+  updateBroadcaster(data: BroadcasterUpdateInput!, where: BroadcasterWhereUniqueInput!): Broadcaster
   updateSong(data: SongUpdateInput!, where: SongWhereUniqueInput!): Song
   updateQueueSong(data: QueueSongUpdateInput!, where: QueueSongWhereUniqueInput!): QueueSong
-  deleteUser(where: UserWhereUniqueInput!): User
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  deleteBroadcaster(where: BroadcasterWhereUniqueInput!): Broadcaster
   deleteSong(where: SongWhereUniqueInput!): Song
   deleteQueueSong(where: QueueSongWhereUniqueInput!): QueueSong
-  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  deleteUser(where: UserWhereUniqueInput!): User
+  upsertBroadcaster(where: BroadcasterWhereUniqueInput!, create: BroadcasterCreateInput!, update: BroadcasterUpdateInput!): Broadcaster!
   upsertSong(where: SongWhereUniqueInput!, create: SongCreateInput!, update: SongUpdateInput!): Song!
   upsertQueueSong(where: QueueSongWhereUniqueInput!, create: QueueSongCreateInput!, update: QueueSongUpdateInput!): QueueSong!
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  updateManyBroadcasters(data: BroadcasterUpdateManyMutationInput!, where: BroadcasterWhereInput): BatchPayload!
   updateManySongs(data: SongUpdateManyMutationInput!, where: SongWhereInput): BatchPayload!
-  deleteManyUsers(where: UserWhereInput): BatchPayload!
+  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
+  deleteManyBroadcasters(where: BroadcasterWhereInput): BatchPayload!
   deleteManySongs(where: SongWhereInput): BatchPayload!
   deleteManyQueueSongs(where: QueueSongWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
   executeRaw(database: PrismaDatabase, query: String!): Json!
 }
 
@@ -81,15 +357,18 @@ enum PrismaDatabase {
 }
 
 type Query {
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  broadcasters(where: BroadcasterWhereInput, orderBy: BroadcasterOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Broadcaster]!
   songs(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Song]!
   queueSongs(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [QueueSong]!
-  user(where: UserWhereUniqueInput!): User
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  broadcaster(where: BroadcasterWhereUniqueInput!): Broadcaster
   song(where: SongWhereUniqueInput!): Song
   queueSong(where: QueueSongWhereUniqueInput!): QueueSong
-  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  user(where: UserWhereUniqueInput!): User
+  broadcastersConnection(where: BroadcasterWhereInput, orderBy: BroadcasterOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BroadcasterConnection!
   songsConnection(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SongConnection!
   queueSongsConnection(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): QueueSongConnection!
+  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -102,7 +381,7 @@ type QueueSong implements Node {
   id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: User!
+  broadcaster: Broadcaster!
   song: Song!
 }
 
@@ -118,12 +397,12 @@ type QueueSongConnection {
 
 input QueueSongCreateInput {
   id: ID
-  user: UserCreateOneWithoutQueueInput!
+  broadcaster: BroadcasterCreateOneWithoutQueueInput!
   song: SongCreateOneWithoutQueueInput!
 }
 
-input QueueSongCreateManyWithoutUserInput {
-  create: [QueueSongCreateWithoutUserInput!]
+input QueueSongCreateManyWithoutBroadcasterInput {
+  create: [QueueSongCreateWithoutBroadcasterInput!]
   connect: [QueueSongWhereUniqueInput!]
 }
 
@@ -132,14 +411,14 @@ input QueueSongCreateOneWithoutSongInput {
   connect: QueueSongWhereUniqueInput
 }
 
-input QueueSongCreateWithoutSongInput {
-  id: ID
-  user: UserCreateOneWithoutQueueInput!
-}
-
-input QueueSongCreateWithoutUserInput {
+input QueueSongCreateWithoutBroadcasterInput {
   id: ID
   song: SongCreateOneWithoutQueueInput!
+}
+
+input QueueSongCreateWithoutSongInput {
+  id: ID
+  broadcaster: BroadcasterCreateOneWithoutQueueInput!
 }
 
 """An edge in a connection."""
@@ -299,19 +578,19 @@ input QueueSongSubscriptionWhereInput {
 }
 
 input QueueSongUpdateInput {
-  user: UserUpdateOneRequiredWithoutQueueInput
+  broadcaster: BroadcasterUpdateOneRequiredWithoutQueueInput
   song: SongUpdateOneRequiredWithoutQueueInput
 }
 
-input QueueSongUpdateManyWithoutUserInput {
-  create: [QueueSongCreateWithoutUserInput!]
+input QueueSongUpdateManyWithoutBroadcasterInput {
+  create: [QueueSongCreateWithoutBroadcasterInput!]
   connect: [QueueSongWhereUniqueInput!]
   set: [QueueSongWhereUniqueInput!]
   disconnect: [QueueSongWhereUniqueInput!]
   delete: [QueueSongWhereUniqueInput!]
-  update: [QueueSongUpdateWithWhereUniqueWithoutUserInput!]
+  update: [QueueSongUpdateWithWhereUniqueWithoutBroadcasterInput!]
   deleteMany: [QueueSongScalarWhereInput!]
-  upsert: [QueueSongUpsertWithWhereUniqueWithoutUserInput!]
+  upsert: [QueueSongUpsertWithWhereUniqueWithoutBroadcasterInput!]
 }
 
 input QueueSongUpdateOneWithoutSongInput {
@@ -323,17 +602,17 @@ input QueueSongUpdateOneWithoutSongInput {
   upsert: QueueSongUpsertWithoutSongInput
 }
 
-input QueueSongUpdateWithoutSongDataInput {
-  user: UserUpdateOneRequiredWithoutQueueInput
-}
-
-input QueueSongUpdateWithoutUserDataInput {
+input QueueSongUpdateWithoutBroadcasterDataInput {
   song: SongUpdateOneRequiredWithoutQueueInput
 }
 
-input QueueSongUpdateWithWhereUniqueWithoutUserInput {
+input QueueSongUpdateWithoutSongDataInput {
+  broadcaster: BroadcasterUpdateOneRequiredWithoutQueueInput
+}
+
+input QueueSongUpdateWithWhereUniqueWithoutBroadcasterInput {
   where: QueueSongWhereUniqueInput!
-  data: QueueSongUpdateWithoutUserDataInput!
+  data: QueueSongUpdateWithoutBroadcasterDataInput!
 }
 
 input QueueSongUpsertWithoutSongInput {
@@ -341,10 +620,10 @@ input QueueSongUpsertWithoutSongInput {
   create: QueueSongCreateWithoutSongInput!
 }
 
-input QueueSongUpsertWithWhereUniqueWithoutUserInput {
+input QueueSongUpsertWithWhereUniqueWithoutBroadcasterInput {
   where: QueueSongWhereUniqueInput!
-  update: QueueSongUpdateWithoutUserDataInput!
-  create: QueueSongCreateWithoutUserInput!
+  update: QueueSongUpdateWithoutBroadcasterDataInput!
+  create: QueueSongCreateWithoutBroadcasterInput!
 }
 
 input QueueSongWhereInput {
@@ -440,7 +719,7 @@ input QueueSongWhereInput {
 
   """All values greater than or equal the given value."""
   updatedAt_gte: DateTime
-  user: UserWhereInput
+  broadcaster: BroadcasterWhereInput
   song: SongWhereInput
 }
 
@@ -450,12 +729,12 @@ input QueueSongWhereUniqueInput {
 
 type Song implements Node {
   id: ID!
-  name: String!
+  title: String!
   artist: String!
   requestedAmount: Int!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: User!
+  broadcaster: Broadcaster!
   queue: QueueSong
 }
 
@@ -471,15 +750,15 @@ type SongConnection {
 
 input SongCreateInput {
   id: ID
-  name: String!
+  title: String!
   artist: String!
   requestedAmount: Int
-  user: UserCreateOneWithoutSongsInput!
+  broadcaster: BroadcasterCreateOneWithoutSongsInput!
   queue: QueueSongCreateOneWithoutSongInput
 }
 
-input SongCreateManyWithoutUserInput {
-  create: [SongCreateWithoutUserInput!]
+input SongCreateManyWithoutBroadcasterInput {
+  create: [SongCreateWithoutBroadcasterInput!]
   connect: [SongWhereUniqueInput!]
 }
 
@@ -488,20 +767,20 @@ input SongCreateOneWithoutQueueInput {
   connect: SongWhereUniqueInput
 }
 
-input SongCreateWithoutQueueInput {
+input SongCreateWithoutBroadcasterInput {
   id: ID
-  name: String!
-  artist: String!
-  requestedAmount: Int
-  user: UserCreateOneWithoutSongsInput!
-}
-
-input SongCreateWithoutUserInput {
-  id: ID
-  name: String!
+  title: String!
   artist: String!
   requestedAmount: Int
   queue: QueueSongCreateOneWithoutSongInput
+}
+
+input SongCreateWithoutQueueInput {
+  id: ID
+  title: String!
+  artist: String!
+  requestedAmount: Int
+  broadcaster: BroadcasterCreateOneWithoutSongsInput!
 }
 
 """An edge in a connection."""
@@ -516,8 +795,8 @@ type SongEdge {
 enum SongOrderByInput {
   id_ASC
   id_DESC
-  name_ASC
-  name_DESC
+  title_ASC
+  title_DESC
   artist_ASC
   artist_DESC
   requestedAmount_ASC
@@ -530,7 +809,7 @@ enum SongOrderByInput {
 
 type SongPreviousValues {
   id: ID!
-  name: String!
+  title: String!
   artist: String!
   requestedAmount: Int!
   createdAt: DateTime!
@@ -586,46 +865,46 @@ input SongScalarWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
-  name: String
+  title: String
 
   """All values that are not equal to given value."""
-  name_not: String
+  title_not: String
 
   """All values that are contained in given list."""
-  name_in: [String!]
+  title_in: [String!]
 
   """All values that are not contained in given list."""
-  name_not_in: [String!]
+  title_not_in: [String!]
 
   """All values less than the given value."""
-  name_lt: String
+  title_lt: String
 
   """All values less than or equal the given value."""
-  name_lte: String
+  title_lte: String
 
   """All values greater than the given value."""
-  name_gt: String
+  title_gt: String
 
   """All values greater than or equal the given value."""
-  name_gte: String
+  title_gte: String
 
   """All values containing the given string."""
-  name_contains: String
+  title_contains: String
 
   """All values not containing the given string."""
-  name_not_contains: String
+  title_not_contains: String
 
   """All values starting with the given string."""
-  name_starts_with: String
+  title_starts_with: String
 
   """All values not starting with the given string."""
-  name_not_starts_with: String
+  title_not_starts_with: String
 
   """All values ending with the given string."""
-  name_ends_with: String
+  title_ends_with: String
 
   """All values not ending with the given string."""
-  name_not_ends_with: String
+  title_not_ends_with: String
   artist: String
 
   """All values that are not equal to given value."""
@@ -772,35 +1051,35 @@ input SongSubscriptionWhereInput {
 }
 
 input SongUpdateInput {
-  name: String
+  title: String
   artist: String
   requestedAmount: Int
-  user: UserUpdateOneRequiredWithoutSongsInput
+  broadcaster: BroadcasterUpdateOneRequiredWithoutSongsInput
   queue: QueueSongUpdateOneWithoutSongInput
 }
 
 input SongUpdateManyDataInput {
-  name: String
+  title: String
   artist: String
   requestedAmount: Int
 }
 
 input SongUpdateManyMutationInput {
-  name: String
+  title: String
   artist: String
   requestedAmount: Int
 }
 
-input SongUpdateManyWithoutUserInput {
-  create: [SongCreateWithoutUserInput!]
+input SongUpdateManyWithoutBroadcasterInput {
+  create: [SongCreateWithoutBroadcasterInput!]
   connect: [SongWhereUniqueInput!]
   set: [SongWhereUniqueInput!]
   disconnect: [SongWhereUniqueInput!]
   delete: [SongWhereUniqueInput!]
-  update: [SongUpdateWithWhereUniqueWithoutUserInput!]
+  update: [SongUpdateWithWhereUniqueWithoutBroadcasterInput!]
   updateMany: [SongUpdateManyWithWhereNestedInput!]
   deleteMany: [SongScalarWhereInput!]
-  upsert: [SongUpsertWithWhereUniqueWithoutUserInput!]
+  upsert: [SongUpsertWithWhereUniqueWithoutBroadcasterInput!]
 }
 
 input SongUpdateManyWithWhereNestedInput {
@@ -815,23 +1094,23 @@ input SongUpdateOneRequiredWithoutQueueInput {
   upsert: SongUpsertWithoutQueueInput
 }
 
-input SongUpdateWithoutQueueDataInput {
-  name: String
-  artist: String
-  requestedAmount: Int
-  user: UserUpdateOneRequiredWithoutSongsInput
-}
-
-input SongUpdateWithoutUserDataInput {
-  name: String
+input SongUpdateWithoutBroadcasterDataInput {
+  title: String
   artist: String
   requestedAmount: Int
   queue: QueueSongUpdateOneWithoutSongInput
 }
 
-input SongUpdateWithWhereUniqueWithoutUserInput {
+input SongUpdateWithoutQueueDataInput {
+  title: String
+  artist: String
+  requestedAmount: Int
+  broadcaster: BroadcasterUpdateOneRequiredWithoutSongsInput
+}
+
+input SongUpdateWithWhereUniqueWithoutBroadcasterInput {
   where: SongWhereUniqueInput!
-  data: SongUpdateWithoutUserDataInput!
+  data: SongUpdateWithoutBroadcasterDataInput!
 }
 
 input SongUpsertWithoutQueueInput {
@@ -839,10 +1118,10 @@ input SongUpsertWithoutQueueInput {
   create: SongCreateWithoutQueueInput!
 }
 
-input SongUpsertWithWhereUniqueWithoutUserInput {
+input SongUpsertWithWhereUniqueWithoutBroadcasterInput {
   where: SongWhereUniqueInput!
-  update: SongUpdateWithoutUserDataInput!
-  create: SongCreateWithoutUserInput!
+  update: SongUpdateWithoutBroadcasterDataInput!
+  create: SongCreateWithoutBroadcasterInput!
 }
 
 input SongWhereInput {
@@ -894,46 +1173,46 @@ input SongWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
-  name: String
+  title: String
 
   """All values that are not equal to given value."""
-  name_not: String
+  title_not: String
 
   """All values that are contained in given list."""
-  name_in: [String!]
+  title_in: [String!]
 
   """All values that are not contained in given list."""
-  name_not_in: [String!]
+  title_not_in: [String!]
 
   """All values less than the given value."""
-  name_lt: String
+  title_lt: String
 
   """All values less than or equal the given value."""
-  name_lte: String
+  title_lte: String
 
   """All values greater than the given value."""
-  name_gt: String
+  title_gt: String
 
   """All values greater than or equal the given value."""
-  name_gte: String
+  title_gte: String
 
   """All values containing the given string."""
-  name_contains: String
+  title_contains: String
 
   """All values not containing the given string."""
-  name_not_contains: String
+  title_not_contains: String
 
   """All values starting with the given string."""
-  name_starts_with: String
+  title_starts_with: String
 
   """All values not starting with the given string."""
-  name_not_starts_with: String
+  title_not_starts_with: String
 
   """All values ending with the given string."""
-  name_ends_with: String
+  title_ends_with: String
 
   """All values not ending with the given string."""
-  name_not_ends_with: String
+  title_not_ends_with: String
   artist: String
 
   """All values that are not equal to given value."""
@@ -1040,7 +1319,7 @@ input SongWhereInput {
 
   """All values greater than or equal the given value."""
   updatedAt_gte: DateTime
-  user: UserWhereInput
+  broadcaster: BroadcasterWhereInput
   queue: QueueSongWhereInput
 }
 
@@ -1049,17 +1328,18 @@ input SongWhereUniqueInput {
 }
 
 type Subscription {
-  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  broadcaster(where: BroadcasterSubscriptionWhereInput): BroadcasterSubscriptionPayload
   song(where: SongSubscriptionWhereInput): SongSubscriptionPayload
   queueSong(where: QueueSongSubscriptionWhereInput): QueueSongSubscriptionPayload
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
 type User implements Node {
   id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  songs(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Song!]
-  queue(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [QueueSong!]
+  userId: String
+  isMod: Boolean!
+  hasSharedId: Boolean!
+  role: String!
 }
 
 """A connection to a list of items."""
@@ -1074,28 +1354,10 @@ type UserConnection {
 
 input UserCreateInput {
   id: ID
-  songs: SongCreateManyWithoutUserInput
-  queue: QueueSongCreateManyWithoutUserInput
-}
-
-input UserCreateOneWithoutQueueInput {
-  create: UserCreateWithoutQueueInput
-  connect: UserWhereUniqueInput
-}
-
-input UserCreateOneWithoutSongsInput {
-  create: UserCreateWithoutSongsInput
-  connect: UserWhereUniqueInput
-}
-
-input UserCreateWithoutQueueInput {
-  id: ID
-  songs: SongCreateManyWithoutUserInput
-}
-
-input UserCreateWithoutSongsInput {
-  id: ID
-  queue: QueueSongCreateManyWithoutUserInput
+  userId: String
+  isMod: Boolean
+  hasSharedId: Boolean
+  role: String!
 }
 
 """An edge in a connection."""
@@ -1110,16 +1372,22 @@ type UserEdge {
 enum UserOrderByInput {
   id_ASC
   id_DESC
-  createdAt_ASC
-  createdAt_DESC
-  updatedAt_ASC
-  updatedAt_DESC
+  userId_ASC
+  userId_DESC
+  isMod_ASC
+  isMod_DESC
+  hasSharedId_ASC
+  hasSharedId_DESC
+  role_ASC
+  role_DESC
 }
 
 type UserPreviousValues {
   id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  userId: String
+  isMod: Boolean!
+  hasSharedId: Boolean!
+  role: String!
 }
 
 type UserSubscriptionPayload {
@@ -1160,40 +1428,17 @@ input UserSubscriptionWhereInput {
 }
 
 input UserUpdateInput {
-  songs: SongUpdateManyWithoutUserInput
-  queue: QueueSongUpdateManyWithoutUserInput
+  userId: String
+  isMod: Boolean
+  hasSharedId: Boolean
+  role: String
 }
 
-input UserUpdateOneRequiredWithoutQueueInput {
-  create: UserCreateWithoutQueueInput
-  connect: UserWhereUniqueInput
-  update: UserUpdateWithoutQueueDataInput
-  upsert: UserUpsertWithoutQueueInput
-}
-
-input UserUpdateOneRequiredWithoutSongsInput {
-  create: UserCreateWithoutSongsInput
-  connect: UserWhereUniqueInput
-  update: UserUpdateWithoutSongsDataInput
-  upsert: UserUpsertWithoutSongsInput
-}
-
-input UserUpdateWithoutQueueDataInput {
-  songs: SongUpdateManyWithoutUserInput
-}
-
-input UserUpdateWithoutSongsDataInput {
-  queue: QueueSongUpdateManyWithoutUserInput
-}
-
-input UserUpsertWithoutQueueInput {
-  update: UserUpdateWithoutQueueDataInput!
-  create: UserCreateWithoutQueueInput!
-}
-
-input UserUpsertWithoutSongsInput {
-  update: UserUpdateWithoutSongsDataInput!
-  create: UserCreateWithoutSongsInput!
+input UserUpdateManyMutationInput {
+  userId: String
+  isMod: Boolean
+  hasSharedId: Boolean
+  role: String
 }
 
 input UserWhereInput {
@@ -1245,56 +1490,94 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
-  createdAt: DateTime
+  userId: String
 
   """All values that are not equal to given value."""
-  createdAt_not: DateTime
+  userId_not: String
 
   """All values that are contained in given list."""
-  createdAt_in: [DateTime!]
+  userId_in: [String!]
 
   """All values that are not contained in given list."""
-  createdAt_not_in: [DateTime!]
+  userId_not_in: [String!]
 
   """All values less than the given value."""
-  createdAt_lt: DateTime
+  userId_lt: String
 
   """All values less than or equal the given value."""
-  createdAt_lte: DateTime
+  userId_lte: String
 
   """All values greater than the given value."""
-  createdAt_gt: DateTime
+  userId_gt: String
 
   """All values greater than or equal the given value."""
-  createdAt_gte: DateTime
-  updatedAt: DateTime
+  userId_gte: String
+
+  """All values containing the given string."""
+  userId_contains: String
+
+  """All values not containing the given string."""
+  userId_not_contains: String
+
+  """All values starting with the given string."""
+  userId_starts_with: String
+
+  """All values not starting with the given string."""
+  userId_not_starts_with: String
+
+  """All values ending with the given string."""
+  userId_ends_with: String
+
+  """All values not ending with the given string."""
+  userId_not_ends_with: String
+  isMod: Boolean
 
   """All values that are not equal to given value."""
-  updatedAt_not: DateTime
+  isMod_not: Boolean
+  hasSharedId: Boolean
+
+  """All values that are not equal to given value."""
+  hasSharedId_not: Boolean
+  role: String
+
+  """All values that are not equal to given value."""
+  role_not: String
 
   """All values that are contained in given list."""
-  updatedAt_in: [DateTime!]
+  role_in: [String!]
 
   """All values that are not contained in given list."""
-  updatedAt_not_in: [DateTime!]
+  role_not_in: [String!]
 
   """All values less than the given value."""
-  updatedAt_lt: DateTime
+  role_lt: String
 
   """All values less than or equal the given value."""
-  updatedAt_lte: DateTime
+  role_lte: String
 
   """All values greater than the given value."""
-  updatedAt_gt: DateTime
+  role_gt: String
 
   """All values greater than or equal the given value."""
-  updatedAt_gte: DateTime
-  songs_every: SongWhereInput
-  songs_some: SongWhereInput
-  songs_none: SongWhereInput
-  queue_every: QueueSongWhereInput
-  queue_some: QueueSongWhereInput
-  queue_none: QueueSongWhereInput
+  role_gte: String
+
+  """All values containing the given string."""
+  role_contains: String
+
+  """All values not containing the given string."""
+  role_not_contains: String
+
+  """All values starting with the given string."""
+  role_starts_with: String
+
+  """All values not starting with the given string."""
+  role_not_starts_with: String
+
+  """All values ending with the given string."""
+  role_ends_with: String
+
+  """All values not ending with the given string."""
+  role_not_ends_with: String
 }
 
 input UserWhereUniqueInput {

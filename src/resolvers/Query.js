@@ -1,43 +1,57 @@
 import getUserInfo from '../utils/getUserInfo';
 
 const Query = {
-    user(parent, args, { prisma }, info) {
+    broadcaster(parent, args, { prisma }, info) {
         const operationArgs = {};
         if (args.id) {
             operationArgs.where = {
                 id: args.id
             };
         }
-        return prisma.query.user(operationArgs, info);
+        return prisma.query.broadcaster(operationArgs, info);
     },
     async me(parent, args, { prisma, request }, info) {
-        const userInfo = getUserInfo(request);
-        const userId = userInfo.decoded.user_id;
+        const { userInfo, token } = getUserInfo(request);
 
-        if (userInfo.decoded.role === 'broadcaster') {
-            const userExists = await prisma.exists.User({ id: userId });
+        if (userInfo.role === 'broadcaster') {
+            const broadcasterExists = await prisma.exists.Broadcaster({
+                id: userInfo.user_id
+            });
 
-            if (!userExists) {
-                const user = await prisma.mutation.createUser({
+            if (!broadcasterExists) {
+                const broadcaster = await prisma.mutation.createBroadcaster({
                     data: {
-                        id: userId
+                        id: userInfo.user_id,
+                        isMod: true
                     }
                 });
 
                 return {
-                    token: userInfo.token,
-                    user
+                    token,
+                    broadcaster
                 };
             } else {
-                const existingUser = await prisma.query.user({
-                    where: { id: userId }
+                const broadcaster = await prisma.query.broadcaster({
+                    where: { id: userInfo.user_id }
                 });
 
                 return {
-                    token: userInfo.token,
-                    user: existingUser
+                    token,
+                    broadcaster
                 };
             }
+        } else {
+            const user = {
+                id: userInfo.opaque_user_id,
+                userId: userInfo.user_id,
+                role: userInfo.role,
+                isMod: false,
+                hasSharedId: userInfo.hasSharedId
+            };
+            return {
+                token,
+                user
+            };
         }
     }
     // users(parent, args, { prisma }, info) {
