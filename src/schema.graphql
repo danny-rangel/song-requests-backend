@@ -1,4 +1,4 @@
-# import UserOrderByInput from './generated/prisma.graphql'
+# import SongOrderByInput from './generated/prisma.graphql'
 
 type Query {
     # users(
@@ -9,6 +9,12 @@ type Query {
     #     orderBy: UserOrderByInput
     # ): [User!]!
     broadcaster(id: ID!): Broadcaster!
+    songs(
+        query: String
+        first: Int
+        skip: Int
+        orderBy: SongOrderByInput
+    ): [Song!]!
     me: AuthPayload!
 }
 

@@ -56,6 +56,36 @@ const Query = {
                 channelId: userInfo.channel_id
             };
         }
+    },
+    songs(parent, args, { prisma, request }, info) {
+        const { userInfo, token } = getUserInfo(request);
+        const operationArgs = {
+            first: args.first,
+            skip: args.skip,
+            orderBy: args.orderBy
+        };
+
+        if (args.query) {
+            operationArgs.where = {
+                AND: [
+                    {
+                        broadcaster: {
+                            id: userInfo.channel_id
+                        }
+                    }
+                ],
+                OR: [
+                    {
+                        title_contains: args.query
+                    },
+                    {
+                        artist_contains: args.query
+                    }
+                ]
+            };
+        }
+
+        return prisma.query.songs(operationArgs, info);
     }
     // users(parent, args, { prisma }, info) {
     //     const operationArgs = {
