@@ -38,7 +38,7 @@ const Mutation = {
                 data: {
                     broadcaster: {
                         connect: {
-                            id: userInfo.user_id
+                            id: userInfo.channel_id
                         }
                     },
                     song: {
