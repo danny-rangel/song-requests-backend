@@ -87,24 +87,6 @@ const Query = {
 
         return prisma.query.songs(operationArgs, info);
     }
-    // users(parent, args, { prisma }, info) {
-    //     const operationArgs = {
-    //         first: args.first,
-    //         skip: args.skip,
-    //         after: args.after,
-    //         orderBy: args.orderBy
-    //     };
-    //     if (args.query) {
-    //         operationArgs.where = {
-    //             OR: [
-    //                 {
-    //                     name_contains: args.query
-    //                 }
-    //             ]
-    //         };
-    //     }
-    //     return prisma.query.users(operationArgs, info);
-    // },
 };
 
 export { Query as default };

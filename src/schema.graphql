@@ -1,13 +1,6 @@
 # import SongOrderByInput from './generated/prisma.graphql'
 
 type Query {
-    # users(
-    #     query: String
-    #     first: Int
-    #     skip: Int
-    #     after: String
-    #     orderBy: UserOrderByInput
-    # ): [User!]!
     broadcaster(id: ID!): Broadcaster!
     songs(
         query: String
