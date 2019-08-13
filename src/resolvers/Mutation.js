@@ -31,7 +31,7 @@ const Mutation = {
     addSongToQueue(parent, { songId }, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);
 
-        const songInQueue = prisma.exists.queueSong({
+        const songInQueue = prisma.exists.QueueSong({
             id: songId
         });
 
