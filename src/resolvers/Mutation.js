@@ -28,10 +28,10 @@ const Mutation = {
             info
         );
     },
-    addSongToQueue(parent, { songId }, { prisma, request }, info) {
+    async addSongToQueue(parent, { songId }, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);
 
-        const songInQueue = prisma.exists.QueueSong({
+        const songInQueue = await prisma.exists.QueueSong({
             id: songId
         });
 
