@@ -31,11 +31,18 @@ const Mutation = {
     addSongToQueue(parent, { songId }, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);
 
-        // check if song is in queue already
+        const songInQueue = prisma.exists.queueSong({
+            id: songId
+        });
+
+        if (songInQueue) {
+            throw new Error('Song is already in queue!');
+        }
 
         return prisma.mutation.createQueueSong(
             {
                 data: {
+                    id: songId,
                     broadcaster: {
                         connect: {
                             id: userInfo.channel_id
