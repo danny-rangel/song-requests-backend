@@ -9,10 +9,10 @@ const Mutation = {
             info
         );
     },
-    createSong(parent, { data }, { prisma, request }, info) {
+    async createSong(parent, { data }, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);
 
-        return prisma.mutation.createSong(
+        const song = await prisma.mutation.createSong(
             {
                 data: {
                     title: data.title,
@@ -27,6 +27,25 @@ const Mutation = {
             },
             info
         );
+
+        const songs = await prisma.query.songs({
+            where: {
+                broadcaster: {
+                    id: userInfo.user_id
+                }
+            }
+        });
+
+        await prisma.mutation.updateBroadcaster({
+            data: {
+                songCount: songs.length
+            },
+            where: {
+                id: userInfo.user_id
+            }
+        });
+
+        return song;
     },
     async addSongToQueue(parent, { songId }, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);

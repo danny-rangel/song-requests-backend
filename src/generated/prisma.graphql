@@ -1,5 +1,5 @@
 # source: http://localhost:4466/stream-requests/dev
-# timestamp: Sat Aug 10 2019 18:18:56 GMT-0700 (Pacific Daylight Time)
+# timestamp: Mon Aug 12 2019 21:03:33 GMT-0700 (Pacific Daylight Time)
 
 type AggregateBroadcaster {
   count: Int!
@@ -27,6 +27,7 @@ type Broadcaster implements Node {
   createdAt: DateTime!
   updatedAt: DateTime!
   isMod: Boolean!
+  songCount: Int!
   songs(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Song!]
   queue(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [QueueSong!]
 }
@@ -44,6 +45,7 @@ type BroadcasterConnection {
 input BroadcasterCreateInput {
   id: ID
   isMod: Boolean
+  songCount: Int
   songs: SongCreateManyWithoutBroadcasterInput
   queue: QueueSongCreateManyWithoutBroadcasterInput
 }
@@ -61,12 +63,14 @@ input BroadcasterCreateOneWithoutSongsInput {
 input BroadcasterCreateWithoutQueueInput {
   id: ID
   isMod: Boolean
+  songCount: Int
   songs: SongCreateManyWithoutBroadcasterInput
 }
 
 input BroadcasterCreateWithoutSongsInput {
   id: ID
   isMod: Boolean
+  songCount: Int
   queue: QueueSongCreateManyWithoutBroadcasterInput
 }
 
@@ -88,6 +92,8 @@ enum BroadcasterOrderByInput {
   updatedAt_DESC
   isMod_ASC
   isMod_DESC
+  songCount_ASC
+  songCount_DESC
 }
 
 type BroadcasterPreviousValues {
@@ -95,6 +101,7 @@ type BroadcasterPreviousValues {
   createdAt: DateTime!
   updatedAt: DateTime!
   isMod: Boolean!
+  songCount: Int!
 }
 
 type BroadcasterSubscriptionPayload {
@@ -136,12 +143,14 @@ input BroadcasterSubscriptionWhereInput {
 
 input BroadcasterUpdateInput {
   isMod: Boolean
+  songCount: Int
   songs: SongUpdateManyWithoutBroadcasterInput
   queue: QueueSongUpdateManyWithoutBroadcasterInput
 }
 
 input BroadcasterUpdateManyMutationInput {
   isMod: Boolean
+  songCount: Int
 }
 
 input BroadcasterUpdateOneRequiredWithoutQueueInput {
@@ -160,11 +169,13 @@ input BroadcasterUpdateOneRequiredWithoutSongsInput {
 
 input BroadcasterUpdateWithoutQueueDataInput {
   isMod: Boolean
+  songCount: Int
   songs: SongUpdateManyWithoutBroadcasterInput
 }
 
 input BroadcasterUpdateWithoutSongsDataInput {
   isMod: Boolean
+  songCount: Int
   queue: QueueSongUpdateManyWithoutBroadcasterInput
 }
 
@@ -275,6 +286,28 @@ input BroadcasterWhereInput {
 
   """All values that are not equal to given value."""
   isMod_not: Boolean
+  songCount: Int
+
+  """All values that are not equal to given value."""
+  songCount_not: Int
+
+  """All values that are contained in given list."""
+  songCount_in: [Int!]
+
+  """All values that are not contained in given list."""
+  songCount_not_in: [Int!]
+
+  """All values less than the given value."""
+  songCount_lt: Int
+
+  """All values less than or equal the given value."""
+  songCount_lte: Int
+
+  """All values greater than the given value."""
+  songCount_gt: Int
+
+  """All values greater than or equal the given value."""
+  songCount_gte: Int
   songs_every: SongWhereInput
   songs_some: SongWhereInput
   songs_none: SongWhereInput

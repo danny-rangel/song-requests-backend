@@ -3,6 +3,7 @@ type Broadcaster {
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
   isMod: Boolean! @default(value: false)
+  songCount: Int! @default(value: 0)
   songs: [Song!] @relation(name: "SongToBroadcaster", onDelete: CASCADE)
   queue: [QueueSong!] @relation(name: "QueueSongToBroadcaster", onDelete: CASCADE)
 }

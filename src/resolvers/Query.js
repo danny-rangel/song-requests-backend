@@ -86,6 +86,19 @@ const Query = {
         }
 
         return prisma.query.songs(operationArgs, info);
+    },
+    async songCount(parent, args, { prisma, request }, info) {
+        const { userInfo, token } = getUserInfo(request);
+
+        const songs = await prisma.query.songs({
+            where: {
+                broadcaster: {
+                    id: userInfo.channel_id
+                }
+            }
+        });
+
+        return songs.length;
     }
 };
 

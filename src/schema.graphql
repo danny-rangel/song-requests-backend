@@ -9,6 +9,7 @@ type Query {
         orderBy: SongOrderByInput
     ): [Song!]!
     me: AuthPayload!
+    songCount: Int
 }
 
 type Mutation {
@@ -50,6 +51,7 @@ type Broadcaster {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    songCount: Int!
     isMod: Boolean!
     songs: [Song!]
     queue: [QueueSong!]
