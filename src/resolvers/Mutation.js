@@ -58,6 +58,10 @@ const Mutation = {
             throw new Error('Song is already in queue!');
         }
 
+        if (!userInfo.hasSharedId) {
+            throw new Error('You must be logged in!');
+        }
+
         return prisma.mutation.createQueueSong(
             {
                 data: {
