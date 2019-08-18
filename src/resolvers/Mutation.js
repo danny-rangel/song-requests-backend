@@ -429,6 +429,10 @@ const Mutation = {
             throw new Error('You must be logged in!');
         }
 
+        if (content.match(/^\s*$/)) {
+            throw new Error('Nothing to say, huh?');
+        }
+
         const res = await axios.get(
             `https://api.twitch.tv/helix/users?id=${userInfo.user_id}`,
             {
