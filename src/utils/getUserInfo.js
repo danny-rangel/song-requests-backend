@@ -10,6 +10,7 @@ const getUserInfo = (request, requireAuth = true) => {
             token,
             secret
         );
+
         let isMod = false;
         let hasSharedId = false;
 

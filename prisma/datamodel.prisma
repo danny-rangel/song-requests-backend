@@ -1,5 +1,12 @@
 type Broadcaster {
   id: ID! @id
+  username: String!
+  profileImage: String!
+  queueIsClosed: Boolean! @default(value: false)
+  subMode: Boolean! @default(value: false)
+  oneRequestPerUser: Boolean! @default(value: true)
+  bitsOnly: Boolean! @default(value: false)
+  bitPriority: BitPriorityType! @default(value: NONE)
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
   isMod: Boolean! @default(value: false)
@@ -13,6 +20,7 @@ type Song {
   title: String!
   artist: String!
   requestedAmount: Int! @default(value: 0)
+  inQueue: Boolean! @default(value: false)
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
   broadcaster: Broadcaster! @relation(name: "SongToBroadcaster", onDelete: SET_NULL)
@@ -23,8 +31,11 @@ type QueueSong {
   id: ID! @id
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
+  bitAmount: Int
+  requestedWithBits: Boolean! @default(value: false)
   broadcaster: Broadcaster! @relation(link: INLINE, name: "QueueSongToBroadcaster", onDelete: SET_NULL)
   song: Song! @relation(link: INLINE, name: "SongToQueue", onDelete: SET_NULL)
+  requestedBy: String!
 }
 
 type User {
@@ -33,4 +44,10 @@ type User {
   isMod: Boolean! @default(value: false)
   hasSharedId: Boolean! @default(value: false)
   role: String!
+}
+
+enum BitPriorityType {
+    TIME
+    AMOUNT
+    NONE
 }

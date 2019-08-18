@@ -1,4 +1,6 @@
+import axios from 'axios';
 import getUserInfo from '../utils/getUserInfo';
+import generateToken from '../utils/generateToken';
 
 const Mutation = {
     deleteBroadcaster(parent, args, { prisma, request }, info) {
@@ -9,14 +11,35 @@ const Mutation = {
             info
         );
     },
-    async createSong(parent, { data }, { prisma, request }, info) {
+    updateBroadcasterSettings(
+        parent,
+        { queueIsClosed, subMode, bitsOnly, bitPriority, oneRequestPerUser },
+        { prisma, request },
+        info
+    ) {
+        const { userInfo, token } = getUserInfo(request);
+
+        return prisma.mutation.updateBroadcaster({
+            data: {
+                queueIsClosed,
+                subMode,
+                bitsOnly,
+                bitPriority,
+                oneRequestPerUser
+            },
+            where: {
+                id: userInfo.user_id
+            }
+        });
+    },
+    async createSong(parent, { title, artist }, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);
 
         const song = await prisma.mutation.createSong(
             {
                 data: {
-                    title: data.title,
-                    artist: data.artist,
+                    title: title,
+                    artist: artist,
                     requestedAmount: 0,
                     broadcaster: {
                         connect: {
@@ -28,27 +51,67 @@ const Mutation = {
             info
         );
 
-        const songs = await prisma.query.songs({
-            where: {
-                broadcaster: {
+        const oldUser = await prisma.query.broadcaster(
+            {
+                where: {
                     id: userInfo.user_id
                 }
-            }
-        });
+            },
+            '{ songCount }'
+        );
 
         await prisma.mutation.updateBroadcaster({
             data: {
-                songCount: songs.length
+                songCount: oldUser.songCount + 1
             },
             where: {
                 id: userInfo.user_id
             }
         });
 
+        try {
+            await axios.post(
+                `https://api.twitch.tv/extensions/message/${
+                    userInfo.channel_id
+                }`,
+                {
+                    content_type: 'application/json',
+                    message: 'newSong',
+                    targets: ['broadcast']
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Client-ID': process.env.CLIENT_ID,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        } catch (err) {
+            console.log('ERROR:', err);
+        }
+
         return song;
     },
     async addSongToQueue(parent, { songId }, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);
+
+        const queueIsClosed = await prisma.query.broadcaster(
+            {
+                where: {
+                    id: userInfo.channel_id
+                }
+            },
+            '{ queueIsClosed, oneRequestPerUser, subMode }'
+        );
+
+        if (queueIsClosed.queueIsClosed) {
+            throw new Error('Queue is currently closed!');
+        }
+
+        // if (queueIsClosed.subMode && !subscriber) {
+        // throw new Error('Sub mode only right now!')
+        // }
 
         const songInQueue = await prisma.exists.QueueSong({
             id: songId
@@ -62,29 +125,101 @@ const Mutation = {
             throw new Error('Song is already in queue!');
         }
 
-        return prisma.mutation.createQueueSong(
-            {
-                data: {
-                    id: songId,
-                    broadcaster: {
-                        connect: {
+        let song = null;
+
+        try {
+            const res = await axios.get(
+                `https://api.twitch.tv/helix/users?id=${userInfo.user_id}`,
+                {
+                    headers: {
+                        'Client-ID': process.env.CLIENT_ID
+                    }
+                }
+            );
+
+            if (queueIsClosed.oneRequestPerUser) {
+                const queueSongs = await prisma.query.broadcaster(
+                    {
+                        where: {
                             id: userInfo.channel_id
                         }
                     },
-                    song: {
-                        connect: {
-                            id: songId
-                        }
+                    '{ queue { requestedBy } }'
+                );
+
+                queueSongs.queue.forEach(object => {
+                    if (object.requestedBy === res.data.data[0].display_name) {
+                        throw new Error('Can only request one song!');
+                    }
+                });
+            }
+
+            song = await prisma.mutation.createQueueSong(
+                {
+                    data: {
+                        id: songId,
+                        broadcaster: {
+                            connect: {
+                                id: userInfo.channel_id
+                            }
+                        },
+                        song: {
+                            connect: {
+                                id: songId
+                            }
+                        },
+                        requestedBy: res.data.data[0].display_name
+                    }
+                },
+                info
+            );
+
+            const oldSong = await prisma.query.song(
+                {
+                    where: {
+                        id: songId
+                    }
+                },
+                '{ requestedAmount }'
+            );
+
+            await prisma.mutation.updateSong({
+                data: {
+                    requestedAmount: oldSong.requestedAmount + 1,
+                    inQueue: true
+                },
+                where: {
+                    id: songId
+                }
+            });
+
+            await axios.post(
+                `https://api.twitch.tv/extensions/message/${
+                    userInfo.channel_id
+                }`,
+                {
+                    content_type: 'application/json',
+                    message: 'newQueueSong',
+                    targets: ['broadcast']
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${generateToken(userInfo)}`,
+                        'Client-ID': process.env.CLIENT_ID,
+                        'Content-Type': 'application/json'
                     }
                 }
-            },
-            info
-        );
+            );
+
+            return song;
+        } catch (err) {
+            throw new Error(err.message);
+        }
     },
-    deleteAllSongsInQueue(parent, args, { prisma, request }, info) {
+    async deleteAllSongsInQueue(parent, args, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);
 
-        return prisma.mutation.deleteManyQueueSongs(
+        const res = await prisma.mutation.deleteManyQueueSongs(
             {
                 where: {
                     broadcaster: {
@@ -94,9 +229,51 @@ const Mutation = {
             },
             info
         );
+
+        await prisma.mutation.updateManySongs({
+            data: {
+                inQueue: false
+            },
+            where: {
+                broadcaster: {
+                    id: userInfo.user_id
+                }
+            }
+        });
+
+        try {
+            await axios.post(
+                `https://api.twitch.tv/extensions/message/${
+                    userInfo.channel_id
+                }`,
+                {
+                    content_type: 'application/json',
+                    message: 'newQueueSong',
+                    targets: ['broadcast']
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Client-ID': process.env.CLIENT_ID,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        } catch (err) {
+            console.log('ERROR:', err);
+        }
+
+        return res;
     },
-    deleteSongInQueue(parent, { queueId }, { prisma }, info) {
-        return prisma.mutation.deleteQueueSong(
+    async deleteSongInQueue(
+        parent,
+        { queueId, songId },
+        { prisma, request },
+        info
+    ) {
+        const { userInfo, token } = getUserInfo(request);
+
+        const res = await prisma.mutation.deleteQueueSong(
             {
                 where: {
                     id: queueId
@@ -104,13 +281,56 @@ const Mutation = {
             },
             info
         );
+
+        await prisma.mutation.updateSong({
+            data: {
+                inQueue: false
+            },
+            where: {
+                id: songId
+            }
+        });
+
+        try {
+            await axios.post(
+                `https://api.twitch.tv/extensions/message/${
+                    userInfo.channel_id
+                }`,
+                {
+                    content_type: 'application/json',
+                    message: 'removeQueueSong',
+                    targets: ['broadcast']
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Client-ID': process.env.CLIENT_ID,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        } catch (err) {
+            console.log('ERROR:', err);
+        }
+
+        return res;
     },
-    deleteSong(parent, { songId }, { prisma, request }, info) {
+    async deleteSong(parent, { songId }, { prisma, request }, info) {
         const { userInfo, token } = getUserInfo(request);
 
-        return prisma.mutation.updateBroadcaster(
+        const oldUser = await prisma.query.broadcaster(
+            {
+                where: {
+                    id: userInfo.user_id
+                }
+            },
+            '{ songCount }'
+        );
+
+        const res = await prisma.mutation.updateBroadcaster(
             {
                 data: {
+                    songCount: oldUser.songCount - 1,
                     songs: {
                         delete: {
                             id: songId
@@ -123,21 +343,50 @@ const Mutation = {
             },
             info
         );
+
+        try {
+            await axios.post(
+                `https://api.twitch.tv/extensions/message/${
+                    userInfo.channel_id
+                }`,
+                {
+                    content_type: 'application/json',
+                    message: 'removeSong',
+                    targets: ['broadcast']
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Client-ID': process.env.CLIENT_ID,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        } catch (err) {
+            console.log('ERROR:', err);
+        }
+
+        return res;
     },
-    updateSong(parent, { data }, { prisma, request }, info) {
+    async updateSong(
+        parent,
+        { songId, title, artist },
+        { prisma, request },
+        info
+    ) {
         const { userInfo, token } = getUserInfo(request);
 
-        return prisma.mutation.updateBroadcaster(
+        const res = await prisma.mutation.updateBroadcaster(
             {
                 data: {
                     songs: {
                         update: {
                             where: {
-                                id: data.songId
+                                id: songId
                             },
                             data: {
-                                title: data.title,
-                                artist: data.artist
+                                title: title,
+                                artist: artist
                             }
                         }
                     }
@@ -148,6 +397,30 @@ const Mutation = {
             },
             info
         );
+
+        try {
+            await axios.post(
+                `https://api.twitch.tv/extensions/message/${
+                    userInfo.channel_id
+                }`,
+                {
+                    content_type: 'application/json',
+                    message: 'removeSong',
+                    targets: ['broadcast']
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Client-ID': process.env.CLIENT_ID,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        } catch (err) {
+            console.log('ERROR:', err);
+        }
+
+        return res;
     }
 };
 

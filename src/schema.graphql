@@ -1,4 +1,4 @@
-# import SongOrderByInput from './generated/prisma.graphql'
+# import SongOrderByInput, QueueSongOrderByInput from './generated/prisma.graphql'
 
 type Query {
     broadcaster(id: ID!): Broadcaster!
@@ -8,18 +8,31 @@ type Query {
         skip: Int
         orderBy: SongOrderByInput
     ): [Song!]!
+    queueSongs(
+        first: Int
+        skip: Int
+        orderBy: QueueSongOrderByInput
+    ): [QueueSong!]!
     me: AuthPayload!
     songCount: Int
+    queueSongCount: Int
 }
 
 type Mutation {
     deleteBroadcaster: Broadcaster!
-    createSong(data: CreateSongInput!): Song!
+    createSong(title: String!, artist: String!): Song!
     addSongToQueue(songId: String!): QueueSong!
     deleteAllSongsInQueue: BatchPayload!
-    deleteSongInQueue(queueId: String!): QueueSong!
+    deleteSongInQueue(queueId: String!, songId: String!): QueueSong!
     deleteSong(songId: String!): Broadcaster!
-    updateSong(data: UpdateSongInput!): Broadcaster!
+    updateSong(songId: String!, title: String, artist: String): Broadcaster!
+    updateBroadcasterSettings(
+        queueIsClosed: Boolean!
+        subMode: Boolean!
+        bitsOnly: Boolean!
+        bitPriority: BitPriorityType!
+        oneRequestPerUser: Boolean!
+    ): Broadcaster!
 }
 
 # type Subscription {
@@ -36,23 +49,19 @@ type BatchPayload {
     count: Long!
 }
 
-input CreateSongInput {
-    title: String!
-    artist: String!
-}
-
-input UpdateSongInput {
-    songId: String!
-    title: String
-    artist: String
-}
-
 type Broadcaster {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    username: String!
+    profileImage: String!
     songCount: Int!
     isMod: Boolean!
+    queueIsClosed: Boolean!
+    subMode: Boolean!
+    oneRequestPerUser: Boolean!
+    bitsOnly: Boolean!
+    bitPriority: BitPriorityType!
     songs: [Song!]
     queue: [QueueSong!]
 }
@@ -71,6 +80,7 @@ type Song {
     title: String!
     artist: String!
     requestedAmount: Int!
+    inQueue: Boolean!
     createdAt: DateTime!
     updatedAt: DateTime!
     broadcaster: Broadcaster!
@@ -80,6 +90,7 @@ type QueueSong {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    requestedBy: String!
     broadcaster: Broadcaster!
     song: Song!
 }
@@ -88,4 +99,10 @@ enum MutationType {
     CREATED
     UPDATED
     DELETED
+}
+
+enum BitPriorityType {
+    TIME
+    AMOUNT
+    NONE
 }

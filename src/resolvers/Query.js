@@ -1,4 +1,5 @@
 import getUserInfo from '../utils/getUserInfo';
+import axios from 'axios';
 
 const Query = {
     broadcaster(parent, args, { prisma }, info) {
@@ -19,10 +20,21 @@ const Query = {
             });
 
             if (!broadcasterExists) {
+                const res = await axios.get(
+                    `https://api.twitch.tv/helix/users?id=${userInfo.user_id}`,
+                    {
+                        headers: {
+                            'Client-ID': process.env.CLIENT_ID
+                        }
+                    }
+                );
+
                 const broadcaster = await prisma.mutation.createBroadcaster({
                     data: {
                         id: userInfo.user_id,
-                        isMod: userInfo.isMod
+                        isMod: userInfo.isMod,
+                        username: res.data.data[0].display_name,
+                        profileImage: res.data.data[0].profile_image_url
                     }
                 });
 
@@ -99,6 +111,35 @@ const Query = {
         });
 
         return songs.length;
+    },
+    queueSongs(parent, args, { prisma, request }, info) {
+        const { userInfo, token } = getUserInfo(request);
+
+        const operationArgs = {
+            first: args.first,
+            skip: args.skip,
+            orderBy: args.orderBy,
+            where: {
+                broadcaster: {
+                    id: userInfo.user_id
+                }
+            }
+        };
+
+        return prisma.query.queueSongs(operationArgs, info);
+    },
+    async queueSongCount(parent, args, { prisma, request }, info) {
+        const { userInfo, token } = getUserInfo(request);
+
+        const queueSongs = await prisma.query.queueSongs({
+            where: {
+                broadcaster: {
+                    id: userInfo.user_id
+                }
+            }
+        });
+
+        return queueSongs.length;
     }
 };
 

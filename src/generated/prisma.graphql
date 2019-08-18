@@ -1,5 +1,5 @@
 # source: http://localhost:4466/stream-requests/dev
-# timestamp: Mon Aug 12 2019 21:03:33 GMT-0700 (Pacific Daylight Time)
+# timestamp: Fri Aug 16 2019 19:38:43 GMT-0700 (Pacific Daylight Time)
 
 type AggregateBroadcaster {
   count: Int!
@@ -22,8 +22,21 @@ type BatchPayload {
   count: Long!
 }
 
+enum BitPriorityType {
+  TIME
+  AMOUNT
+  NONE
+}
+
 type Broadcaster implements Node {
   id: ID!
+  username: String!
+  profileImage: String!
+  queueIsClosed: Boolean!
+  subMode: Boolean!
+  oneRequestPerUser: Boolean!
+  bitsOnly: Boolean!
+  bitPriority: BitPriorityType!
   createdAt: DateTime!
   updatedAt: DateTime!
   isMod: Boolean!
@@ -44,6 +57,13 @@ type BroadcasterConnection {
 
 input BroadcasterCreateInput {
   id: ID
+  username: String!
+  profileImage: String!
+  queueIsClosed: Boolean
+  subMode: Boolean
+  oneRequestPerUser: Boolean
+  bitsOnly: Boolean
+  bitPriority: BitPriorityType
   isMod: Boolean
   songCount: Int
   songs: SongCreateManyWithoutBroadcasterInput
@@ -62,6 +82,13 @@ input BroadcasterCreateOneWithoutSongsInput {
 
 input BroadcasterCreateWithoutQueueInput {
   id: ID
+  username: String!
+  profileImage: String!
+  queueIsClosed: Boolean
+  subMode: Boolean
+  oneRequestPerUser: Boolean
+  bitsOnly: Boolean
+  bitPriority: BitPriorityType
   isMod: Boolean
   songCount: Int
   songs: SongCreateManyWithoutBroadcasterInput
@@ -69,6 +96,13 @@ input BroadcasterCreateWithoutQueueInput {
 
 input BroadcasterCreateWithoutSongsInput {
   id: ID
+  username: String!
+  profileImage: String!
+  queueIsClosed: Boolean
+  subMode: Boolean
+  oneRequestPerUser: Boolean
+  bitsOnly: Boolean
+  bitPriority: BitPriorityType
   isMod: Boolean
   songCount: Int
   queue: QueueSongCreateManyWithoutBroadcasterInput
@@ -86,6 +120,20 @@ type BroadcasterEdge {
 enum BroadcasterOrderByInput {
   id_ASC
   id_DESC
+  username_ASC
+  username_DESC
+  profileImage_ASC
+  profileImage_DESC
+  queueIsClosed_ASC
+  queueIsClosed_DESC
+  subMode_ASC
+  subMode_DESC
+  oneRequestPerUser_ASC
+  oneRequestPerUser_DESC
+  bitsOnly_ASC
+  bitsOnly_DESC
+  bitPriority_ASC
+  bitPriority_DESC
   createdAt_ASC
   createdAt_DESC
   updatedAt_ASC
@@ -98,6 +146,13 @@ enum BroadcasterOrderByInput {
 
 type BroadcasterPreviousValues {
   id: ID!
+  username: String!
+  profileImage: String!
+  queueIsClosed: Boolean!
+  subMode: Boolean!
+  oneRequestPerUser: Boolean!
+  bitsOnly: Boolean!
+  bitPriority: BitPriorityType!
   createdAt: DateTime!
   updatedAt: DateTime!
   isMod: Boolean!
@@ -142,6 +197,13 @@ input BroadcasterSubscriptionWhereInput {
 }
 
 input BroadcasterUpdateInput {
+  username: String
+  profileImage: String
+  queueIsClosed: Boolean
+  subMode: Boolean
+  oneRequestPerUser: Boolean
+  bitsOnly: Boolean
+  bitPriority: BitPriorityType
   isMod: Boolean
   songCount: Int
   songs: SongUpdateManyWithoutBroadcasterInput
@@ -149,6 +211,13 @@ input BroadcasterUpdateInput {
 }
 
 input BroadcasterUpdateManyMutationInput {
+  username: String
+  profileImage: String
+  queueIsClosed: Boolean
+  subMode: Boolean
+  oneRequestPerUser: Boolean
+  bitsOnly: Boolean
+  bitPriority: BitPriorityType
   isMod: Boolean
   songCount: Int
 }
@@ -168,12 +237,26 @@ input BroadcasterUpdateOneRequiredWithoutSongsInput {
 }
 
 input BroadcasterUpdateWithoutQueueDataInput {
+  username: String
+  profileImage: String
+  queueIsClosed: Boolean
+  subMode: Boolean
+  oneRequestPerUser: Boolean
+  bitsOnly: Boolean
+  bitPriority: BitPriorityType
   isMod: Boolean
   songCount: Int
   songs: SongUpdateManyWithoutBroadcasterInput
 }
 
 input BroadcasterUpdateWithoutSongsDataInput {
+  username: String
+  profileImage: String
+  queueIsClosed: Boolean
+  subMode: Boolean
+  oneRequestPerUser: Boolean
+  bitsOnly: Boolean
+  bitPriority: BitPriorityType
   isMod: Boolean
   songCount: Int
   queue: QueueSongUpdateManyWithoutBroadcasterInput
@@ -238,6 +321,112 @@ input BroadcasterWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
+  username: String
+
+  """All values that are not equal to given value."""
+  username_not: String
+
+  """All values that are contained in given list."""
+  username_in: [String!]
+
+  """All values that are not contained in given list."""
+  username_not_in: [String!]
+
+  """All values less than the given value."""
+  username_lt: String
+
+  """All values less than or equal the given value."""
+  username_lte: String
+
+  """All values greater than the given value."""
+  username_gt: String
+
+  """All values greater than or equal the given value."""
+  username_gte: String
+
+  """All values containing the given string."""
+  username_contains: String
+
+  """All values not containing the given string."""
+  username_not_contains: String
+
+  """All values starting with the given string."""
+  username_starts_with: String
+
+  """All values not starting with the given string."""
+  username_not_starts_with: String
+
+  """All values ending with the given string."""
+  username_ends_with: String
+
+  """All values not ending with the given string."""
+  username_not_ends_with: String
+  profileImage: String
+
+  """All values that are not equal to given value."""
+  profileImage_not: String
+
+  """All values that are contained in given list."""
+  profileImage_in: [String!]
+
+  """All values that are not contained in given list."""
+  profileImage_not_in: [String!]
+
+  """All values less than the given value."""
+  profileImage_lt: String
+
+  """All values less than or equal the given value."""
+  profileImage_lte: String
+
+  """All values greater than the given value."""
+  profileImage_gt: String
+
+  """All values greater than or equal the given value."""
+  profileImage_gte: String
+
+  """All values containing the given string."""
+  profileImage_contains: String
+
+  """All values not containing the given string."""
+  profileImage_not_contains: String
+
+  """All values starting with the given string."""
+  profileImage_starts_with: String
+
+  """All values not starting with the given string."""
+  profileImage_not_starts_with: String
+
+  """All values ending with the given string."""
+  profileImage_ends_with: String
+
+  """All values not ending with the given string."""
+  profileImage_not_ends_with: String
+  queueIsClosed: Boolean
+
+  """All values that are not equal to given value."""
+  queueIsClosed_not: Boolean
+  subMode: Boolean
+
+  """All values that are not equal to given value."""
+  subMode_not: Boolean
+  oneRequestPerUser: Boolean
+
+  """All values that are not equal to given value."""
+  oneRequestPerUser_not: Boolean
+  bitsOnly: Boolean
+
+  """All values that are not equal to given value."""
+  bitsOnly_not: Boolean
+  bitPriority: BitPriorityType
+
+  """All values that are not equal to given value."""
+  bitPriority_not: BitPriorityType
+
+  """All values that are contained in given list."""
+  bitPriority_in: [BitPriorityType!]
+
+  """All values that are not contained in given list."""
+  bitPriority_not_in: [BitPriorityType!]
   createdAt: DateTime
 
   """All values that are not equal to given value."""
@@ -350,6 +539,7 @@ type Mutation {
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   updateManyBroadcasters(data: BroadcasterUpdateManyMutationInput!, where: BroadcasterWhereInput): BatchPayload!
   updateManySongs(data: SongUpdateManyMutationInput!, where: SongWhereInput): BatchPayload!
+  updateManyQueueSongs(data: QueueSongUpdateManyMutationInput!, where: QueueSongWhereInput): BatchPayload!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   deleteManyBroadcasters(where: BroadcasterWhereInput): BatchPayload!
   deleteManySongs(where: SongWhereInput): BatchPayload!
@@ -414,8 +604,11 @@ type QueueSong implements Node {
   id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
+  bitAmount: Int
+  requestedWithBits: Boolean!
   broadcaster: Broadcaster!
   song: Song!
+  requestedBy: String!
 }
 
 """A connection to a list of items."""
@@ -430,6 +623,9 @@ type QueueSongConnection {
 
 input QueueSongCreateInput {
   id: ID
+  bitAmount: Int
+  requestedWithBits: Boolean
+  requestedBy: String!
   broadcaster: BroadcasterCreateOneWithoutQueueInput!
   song: SongCreateOneWithoutQueueInput!
 }
@@ -446,11 +642,17 @@ input QueueSongCreateOneWithoutSongInput {
 
 input QueueSongCreateWithoutBroadcasterInput {
   id: ID
+  bitAmount: Int
+  requestedWithBits: Boolean
+  requestedBy: String!
   song: SongCreateOneWithoutQueueInput!
 }
 
 input QueueSongCreateWithoutSongInput {
   id: ID
+  bitAmount: Int
+  requestedWithBits: Boolean
+  requestedBy: String!
   broadcaster: BroadcasterCreateOneWithoutQueueInput!
 }
 
@@ -470,12 +672,21 @@ enum QueueSongOrderByInput {
   createdAt_DESC
   updatedAt_ASC
   updatedAt_DESC
+  bitAmount_ASC
+  bitAmount_DESC
+  requestedWithBits_ASC
+  requestedWithBits_DESC
+  requestedBy_ASC
+  requestedBy_DESC
 }
 
 type QueueSongPreviousValues {
   id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
+  bitAmount: Int
+  requestedWithBits: Boolean!
+  requestedBy: String!
 }
 
 input QueueSongScalarWhereInput {
@@ -571,6 +782,72 @@ input QueueSongScalarWhereInput {
 
   """All values greater than or equal the given value."""
   updatedAt_gte: DateTime
+  bitAmount: Int
+
+  """All values that are not equal to given value."""
+  bitAmount_not: Int
+
+  """All values that are contained in given list."""
+  bitAmount_in: [Int!]
+
+  """All values that are not contained in given list."""
+  bitAmount_not_in: [Int!]
+
+  """All values less than the given value."""
+  bitAmount_lt: Int
+
+  """All values less than or equal the given value."""
+  bitAmount_lte: Int
+
+  """All values greater than the given value."""
+  bitAmount_gt: Int
+
+  """All values greater than or equal the given value."""
+  bitAmount_gte: Int
+  requestedWithBits: Boolean
+
+  """All values that are not equal to given value."""
+  requestedWithBits_not: Boolean
+  requestedBy: String
+
+  """All values that are not equal to given value."""
+  requestedBy_not: String
+
+  """All values that are contained in given list."""
+  requestedBy_in: [String!]
+
+  """All values that are not contained in given list."""
+  requestedBy_not_in: [String!]
+
+  """All values less than the given value."""
+  requestedBy_lt: String
+
+  """All values less than or equal the given value."""
+  requestedBy_lte: String
+
+  """All values greater than the given value."""
+  requestedBy_gt: String
+
+  """All values greater than or equal the given value."""
+  requestedBy_gte: String
+
+  """All values containing the given string."""
+  requestedBy_contains: String
+
+  """All values not containing the given string."""
+  requestedBy_not_contains: String
+
+  """All values starting with the given string."""
+  requestedBy_starts_with: String
+
+  """All values not starting with the given string."""
+  requestedBy_not_starts_with: String
+
+  """All values ending with the given string."""
+  requestedBy_ends_with: String
+
+  """All values not ending with the given string."""
+  requestedBy_not_ends_with: String
 }
 
 type QueueSongSubscriptionPayload {
@@ -611,8 +888,23 @@ input QueueSongSubscriptionWhereInput {
 }
 
 input QueueSongUpdateInput {
+  bitAmount: Int
+  requestedWithBits: Boolean
+  requestedBy: String
   broadcaster: BroadcasterUpdateOneRequiredWithoutQueueInput
   song: SongUpdateOneRequiredWithoutQueueInput
+}
+
+input QueueSongUpdateManyDataInput {
+  bitAmount: Int
+  requestedWithBits: Boolean
+  requestedBy: String
+}
+
+input QueueSongUpdateManyMutationInput {
+  bitAmount: Int
+  requestedWithBits: Boolean
+  requestedBy: String
 }
 
 input QueueSongUpdateManyWithoutBroadcasterInput {
@@ -622,8 +914,14 @@ input QueueSongUpdateManyWithoutBroadcasterInput {
   disconnect: [QueueSongWhereUniqueInput!]
   delete: [QueueSongWhereUniqueInput!]
   update: [QueueSongUpdateWithWhereUniqueWithoutBroadcasterInput!]
+  updateMany: [QueueSongUpdateManyWithWhereNestedInput!]
   deleteMany: [QueueSongScalarWhereInput!]
   upsert: [QueueSongUpsertWithWhereUniqueWithoutBroadcasterInput!]
+}
+
+input QueueSongUpdateManyWithWhereNestedInput {
+  where: QueueSongScalarWhereInput!
+  data: QueueSongUpdateManyDataInput!
 }
 
 input QueueSongUpdateOneWithoutSongInput {
@@ -636,10 +934,16 @@ input QueueSongUpdateOneWithoutSongInput {
 }
 
 input QueueSongUpdateWithoutBroadcasterDataInput {
+  bitAmount: Int
+  requestedWithBits: Boolean
+  requestedBy: String
   song: SongUpdateOneRequiredWithoutQueueInput
 }
 
 input QueueSongUpdateWithoutSongDataInput {
+  bitAmount: Int
+  requestedWithBits: Boolean
+  requestedBy: String
   broadcaster: BroadcasterUpdateOneRequiredWithoutQueueInput
 }
 
@@ -752,6 +1056,72 @@ input QueueSongWhereInput {
 
   """All values greater than or equal the given value."""
   updatedAt_gte: DateTime
+  bitAmount: Int
+
+  """All values that are not equal to given value."""
+  bitAmount_not: Int
+
+  """All values that are contained in given list."""
+  bitAmount_in: [Int!]
+
+  """All values that are not contained in given list."""
+  bitAmount_not_in: [Int!]
+
+  """All values less than the given value."""
+  bitAmount_lt: Int
+
+  """All values less than or equal the given value."""
+  bitAmount_lte: Int
+
+  """All values greater than the given value."""
+  bitAmount_gt: Int
+
+  """All values greater than or equal the given value."""
+  bitAmount_gte: Int
+  requestedWithBits: Boolean
+
+  """All values that are not equal to given value."""
+  requestedWithBits_not: Boolean
+  requestedBy: String
+
+  """All values that are not equal to given value."""
+  requestedBy_not: String
+
+  """All values that are contained in given list."""
+  requestedBy_in: [String!]
+
+  """All values that are not contained in given list."""
+  requestedBy_not_in: [String!]
+
+  """All values less than the given value."""
+  requestedBy_lt: String
+
+  """All values less than or equal the given value."""
+  requestedBy_lte: String
+
+  """All values greater than the given value."""
+  requestedBy_gt: String
+
+  """All values greater than or equal the given value."""
+  requestedBy_gte: String
+
+  """All values containing the given string."""
+  requestedBy_contains: String
+
+  """All values not containing the given string."""
+  requestedBy_not_contains: String
+
+  """All values starting with the given string."""
+  requestedBy_starts_with: String
+
+  """All values not starting with the given string."""
+  requestedBy_not_starts_with: String
+
+  """All values ending with the given string."""
+  requestedBy_ends_with: String
+
+  """All values not ending with the given string."""
+  requestedBy_not_ends_with: String
   broadcaster: BroadcasterWhereInput
   song: SongWhereInput
 }
@@ -765,6 +1135,7 @@ type Song implements Node {
   title: String!
   artist: String!
   requestedAmount: Int!
+  inQueue: Boolean!
   createdAt: DateTime!
   updatedAt: DateTime!
   broadcaster: Broadcaster!
@@ -786,6 +1157,7 @@ input SongCreateInput {
   title: String!
   artist: String!
   requestedAmount: Int
+  inQueue: Boolean
   broadcaster: BroadcasterCreateOneWithoutSongsInput!
   queue: QueueSongCreateOneWithoutSongInput
 }
@@ -805,6 +1177,7 @@ input SongCreateWithoutBroadcasterInput {
   title: String!
   artist: String!
   requestedAmount: Int
+  inQueue: Boolean
   queue: QueueSongCreateOneWithoutSongInput
 }
 
@@ -813,6 +1186,7 @@ input SongCreateWithoutQueueInput {
   title: String!
   artist: String!
   requestedAmount: Int
+  inQueue: Boolean
   broadcaster: BroadcasterCreateOneWithoutSongsInput!
 }
 
@@ -834,6 +1208,8 @@ enum SongOrderByInput {
   artist_DESC
   requestedAmount_ASC
   requestedAmount_DESC
+  inQueue_ASC
+  inQueue_DESC
   createdAt_ASC
   createdAt_DESC
   updatedAt_ASC
@@ -845,6 +1221,7 @@ type SongPreviousValues {
   title: String!
   artist: String!
   requestedAmount: Int!
+  inQueue: Boolean!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -1000,6 +1377,10 @@ input SongScalarWhereInput {
 
   """All values greater than or equal the given value."""
   requestedAmount_gte: Int
+  inQueue: Boolean
+
+  """All values that are not equal to given value."""
+  inQueue_not: Boolean
   createdAt: DateTime
 
   """All values that are not equal to given value."""
@@ -1087,6 +1468,7 @@ input SongUpdateInput {
   title: String
   artist: String
   requestedAmount: Int
+  inQueue: Boolean
   broadcaster: BroadcasterUpdateOneRequiredWithoutSongsInput
   queue: QueueSongUpdateOneWithoutSongInput
 }
@@ -1095,12 +1477,14 @@ input SongUpdateManyDataInput {
   title: String
   artist: String
   requestedAmount: Int
+  inQueue: Boolean
 }
 
 input SongUpdateManyMutationInput {
   title: String
   artist: String
   requestedAmount: Int
+  inQueue: Boolean
 }
 
 input SongUpdateManyWithoutBroadcasterInput {
@@ -1131,6 +1515,7 @@ input SongUpdateWithoutBroadcasterDataInput {
   title: String
   artist: String
   requestedAmount: Int
+  inQueue: Boolean
   queue: QueueSongUpdateOneWithoutSongInput
 }
 
@@ -1138,6 +1523,7 @@ input SongUpdateWithoutQueueDataInput {
   title: String
   artist: String
   requestedAmount: Int
+  inQueue: Boolean
   broadcaster: BroadcasterUpdateOneRequiredWithoutSongsInput
 }
 
@@ -1308,6 +1694,10 @@ input SongWhereInput {
 
   """All values greater than or equal the given value."""
   requestedAmount_gte: Int
+  inQueue: Boolean
+
+  """All values that are not equal to given value."""
+  inQueue_not: Boolean
   createdAt: DateTime
 
   """All values that are not equal to given value."""
