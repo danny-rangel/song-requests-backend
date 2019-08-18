@@ -74,18 +74,17 @@ const Query = {
         const operationArgs = {
             first: args.first,
             skip: args.skip,
-            orderBy: args.orderBy
+            orderBy: args.orderBy,
+            where: {
+                broadcaster: {
+                    id: userInfo.channel_id
+                }
+            }
         };
 
         if (args.query) {
             operationArgs.where = {
-                AND: [
-                    {
-                        broadcaster: {
-                            id: userInfo.channel_id
-                        }
-                    }
-                ],
+                ...operationArgs.where,
                 OR: [
                     {
                         title_contains: args.query

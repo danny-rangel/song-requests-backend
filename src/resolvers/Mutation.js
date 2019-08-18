@@ -118,7 +118,9 @@ const Mutation = {
         });
 
         if (!userInfo.hasSharedId) {
-            throw new Error('You must be logged in!');
+            throw new Error(
+                'The extension needs your permission to request songs! Update permissions below!'
+            );
         }
 
         if (songInQueue) {
