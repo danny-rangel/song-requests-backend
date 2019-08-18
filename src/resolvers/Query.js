@@ -19,16 +19,16 @@ const Query = {
                 id: userInfo.user_id
             });
 
-            if (!broadcasterExists) {
-                const res = await axios.get(
-                    `https://api.twitch.tv/helix/users?id=${userInfo.user_id}`,
-                    {
-                        headers: {
-                            'Client-ID': process.env.CLIENT_ID
-                        }
+            const res = await axios.get(
+                `https://api.twitch.tv/helix/users?id=${userInfo.user_id}`,
+                {
+                    headers: {
+                        'Client-ID': process.env.CLIENT_ID
                     }
-                );
+                }
+            );
 
+            if (!broadcasterExists) {
                 const broadcaster = await prisma.mutation.createBroadcaster({
                     data: {
                         id: userInfo.user_id,
@@ -44,13 +44,17 @@ const Query = {
                     channelId: userInfo.channel_id
                 };
             } else {
-                const broadcaster = await prisma.query.broadcaster({
+                const updatedBroadcaster = await prisma.update.broadcaster({
+                    data: {
+                        username: res.data.data[0].display_name,
+                        profileImage: res.data.data[0].profile_image_url
+                    },
                     where: { id: userInfo.user_id }
                 });
 
                 return {
                     token,
-                    broadcaster,
+                    updatedBroadcaster,
                     channelId: userInfo.channel_id
                 };
             }
