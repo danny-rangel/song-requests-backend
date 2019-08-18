@@ -44,13 +44,15 @@ const Query = {
                     channelId: userInfo.channel_id
                 };
             } else {
-                const updatedBroadcaster = await prisma.update.broadcaster({
-                    data: {
-                        username: res.data.data[0].display_name,
-                        profileImage: res.data.data[0].profile_image_url
-                    },
-                    where: { id: userInfo.user_id }
-                });
+                const updatedBroadcaster = await prisma.mutation.updateBroadcaster(
+                    {
+                        data: {
+                            username: res.data.data[0].display_name,
+                            profileImage: res.data.data[0].profile_image_url
+                        },
+                        where: { id: userInfo.user_id }
+                    }
+                );
 
                 return {
                     token,
