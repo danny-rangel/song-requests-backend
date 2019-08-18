@@ -1,7 +1,11 @@
 # source: http://localhost:4466/stream-requests/dev
-# timestamp: Fri Aug 16 2019 19:38:43 GMT-0700 (Pacific Daylight Time)
+# timestamp: Sun Aug 18 2019 01:53:57 GMT-0700 (Pacific Daylight Time)
 
 type AggregateBroadcaster {
+  count: Int!
+}
+
+type AggregateFeedback {
   count: Int!
 }
 
@@ -511,6 +515,354 @@ input BroadcasterWhereUniqueInput {
 
 scalar DateTime
 
+type Feedback implements Node {
+  id: ID!
+  userId: String!
+  username: String!
+  channelId: String!
+  content: String!
+  createdAt: DateTime!
+}
+
+"""A connection to a list of items."""
+type FeedbackConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [FeedbackEdge]!
+  aggregate: AggregateFeedback!
+}
+
+input FeedbackCreateInput {
+  id: ID
+  userId: String!
+  username: String!
+  channelId: String!
+  content: String!
+}
+
+"""An edge in a connection."""
+type FeedbackEdge {
+  """The item at the end of the edge."""
+  node: Feedback!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum FeedbackOrderByInput {
+  id_ASC
+  id_DESC
+  userId_ASC
+  userId_DESC
+  username_ASC
+  username_DESC
+  channelId_ASC
+  channelId_DESC
+  content_ASC
+  content_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type FeedbackPreviousValues {
+  id: ID!
+  userId: String!
+  username: String!
+  channelId: String!
+  content: String!
+  createdAt: DateTime!
+}
+
+type FeedbackSubscriptionPayload {
+  mutation: MutationType!
+  node: Feedback
+  updatedFields: [String!]
+  previousValues: FeedbackPreviousValues
+}
+
+input FeedbackSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [FeedbackSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [FeedbackSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [FeedbackSubscriptionWhereInput!]
+
+  """The subscription event gets dispatched when it's listed in mutation_in"""
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: FeedbackWhereInput
+}
+
+input FeedbackUpdateInput {
+  userId: String
+  username: String
+  channelId: String
+  content: String
+}
+
+input FeedbackUpdateManyMutationInput {
+  userId: String
+  username: String
+  channelId: String
+  content: String
+}
+
+input FeedbackWhereInput {
+  """Logical AND on all given filters."""
+  AND: [FeedbackWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [FeedbackWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [FeedbackWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  userId: String
+
+  """All values that are not equal to given value."""
+  userId_not: String
+
+  """All values that are contained in given list."""
+  userId_in: [String!]
+
+  """All values that are not contained in given list."""
+  userId_not_in: [String!]
+
+  """All values less than the given value."""
+  userId_lt: String
+
+  """All values less than or equal the given value."""
+  userId_lte: String
+
+  """All values greater than the given value."""
+  userId_gt: String
+
+  """All values greater than or equal the given value."""
+  userId_gte: String
+
+  """All values containing the given string."""
+  userId_contains: String
+
+  """All values not containing the given string."""
+  userId_not_contains: String
+
+  """All values starting with the given string."""
+  userId_starts_with: String
+
+  """All values not starting with the given string."""
+  userId_not_starts_with: String
+
+  """All values ending with the given string."""
+  userId_ends_with: String
+
+  """All values not ending with the given string."""
+  userId_not_ends_with: String
+  username: String
+
+  """All values that are not equal to given value."""
+  username_not: String
+
+  """All values that are contained in given list."""
+  username_in: [String!]
+
+  """All values that are not contained in given list."""
+  username_not_in: [String!]
+
+  """All values less than the given value."""
+  username_lt: String
+
+  """All values less than or equal the given value."""
+  username_lte: String
+
+  """All values greater than the given value."""
+  username_gt: String
+
+  """All values greater than or equal the given value."""
+  username_gte: String
+
+  """All values containing the given string."""
+  username_contains: String
+
+  """All values not containing the given string."""
+  username_not_contains: String
+
+  """All values starting with the given string."""
+  username_starts_with: String
+
+  """All values not starting with the given string."""
+  username_not_starts_with: String
+
+  """All values ending with the given string."""
+  username_ends_with: String
+
+  """All values not ending with the given string."""
+  username_not_ends_with: String
+  channelId: String
+
+  """All values that are not equal to given value."""
+  channelId_not: String
+
+  """All values that are contained in given list."""
+  channelId_in: [String!]
+
+  """All values that are not contained in given list."""
+  channelId_not_in: [String!]
+
+  """All values less than the given value."""
+  channelId_lt: String
+
+  """All values less than or equal the given value."""
+  channelId_lte: String
+
+  """All values greater than the given value."""
+  channelId_gt: String
+
+  """All values greater than or equal the given value."""
+  channelId_gte: String
+
+  """All values containing the given string."""
+  channelId_contains: String
+
+  """All values not containing the given string."""
+  channelId_not_contains: String
+
+  """All values starting with the given string."""
+  channelId_starts_with: String
+
+  """All values not starting with the given string."""
+  channelId_not_starts_with: String
+
+  """All values ending with the given string."""
+  channelId_ends_with: String
+
+  """All values not ending with the given string."""
+  channelId_not_ends_with: String
+  content: String
+
+  """All values that are not equal to given value."""
+  content_not: String
+
+  """All values that are contained in given list."""
+  content_in: [String!]
+
+  """All values that are not contained in given list."""
+  content_not_in: [String!]
+
+  """All values less than the given value."""
+  content_lt: String
+
+  """All values less than or equal the given value."""
+  content_lte: String
+
+  """All values greater than the given value."""
+  content_gt: String
+
+  """All values greater than or equal the given value."""
+  content_gte: String
+
+  """All values containing the given string."""
+  content_contains: String
+
+  """All values not containing the given string."""
+  content_not_contains: String
+
+  """All values starting with the given string."""
+  content_starts_with: String
+
+  """All values not starting with the given string."""
+  content_not_starts_with: String
+
+  """All values ending with the given string."""
+  content_ends_with: String
+
+  """All values not ending with the given string."""
+  content_not_ends_with: String
+  createdAt: DateTime
+
+  """All values that are not equal to given value."""
+  createdAt_not: DateTime
+
+  """All values that are contained in given list."""
+  createdAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  createdAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  createdAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  createdAt_lte: DateTime
+
+  """All values greater than the given value."""
+  createdAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  createdAt_gte: DateTime
+}
+
+input FeedbackWhereUniqueInput {
+  id: ID
+}
+
 """Raw JSON value"""
 scalar Json
 
@@ -525,26 +877,32 @@ type Mutation {
   createSong(data: SongCreateInput!): Song!
   createQueueSong(data: QueueSongCreateInput!): QueueSong!
   createUser(data: UserCreateInput!): User!
+  createFeedback(data: FeedbackCreateInput!): Feedback!
   updateBroadcaster(data: BroadcasterUpdateInput!, where: BroadcasterWhereUniqueInput!): Broadcaster
   updateSong(data: SongUpdateInput!, where: SongWhereUniqueInput!): Song
   updateQueueSong(data: QueueSongUpdateInput!, where: QueueSongWhereUniqueInput!): QueueSong
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateFeedback(data: FeedbackUpdateInput!, where: FeedbackWhereUniqueInput!): Feedback
   deleteBroadcaster(where: BroadcasterWhereUniqueInput!): Broadcaster
   deleteSong(where: SongWhereUniqueInput!): Song
   deleteQueueSong(where: QueueSongWhereUniqueInput!): QueueSong
   deleteUser(where: UserWhereUniqueInput!): User
+  deleteFeedback(where: FeedbackWhereUniqueInput!): Feedback
   upsertBroadcaster(where: BroadcasterWhereUniqueInput!, create: BroadcasterCreateInput!, update: BroadcasterUpdateInput!): Broadcaster!
   upsertSong(where: SongWhereUniqueInput!, create: SongCreateInput!, update: SongUpdateInput!): Song!
   upsertQueueSong(where: QueueSongWhereUniqueInput!, create: QueueSongCreateInput!, update: QueueSongUpdateInput!): QueueSong!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertFeedback(where: FeedbackWhereUniqueInput!, create: FeedbackCreateInput!, update: FeedbackUpdateInput!): Feedback!
   updateManyBroadcasters(data: BroadcasterUpdateManyMutationInput!, where: BroadcasterWhereInput): BatchPayload!
   updateManySongs(data: SongUpdateManyMutationInput!, where: SongWhereInput): BatchPayload!
   updateManyQueueSongs(data: QueueSongUpdateManyMutationInput!, where: QueueSongWhereInput): BatchPayload!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
+  updateManyFeedbacks(data: FeedbackUpdateManyMutationInput!, where: FeedbackWhereInput): BatchPayload!
   deleteManyBroadcasters(where: BroadcasterWhereInput): BatchPayload!
   deleteManySongs(where: SongWhereInput): BatchPayload!
   deleteManyQueueSongs(where: QueueSongWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyFeedbacks(where: FeedbackWhereInput): BatchPayload!
   executeRaw(database: PrismaDatabase, query: String!): Json!
 }
 
@@ -584,14 +942,17 @@ type Query {
   songs(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Song]!
   queueSongs(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [QueueSong]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  feedbacks(where: FeedbackWhereInput, orderBy: FeedbackOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Feedback]!
   broadcaster(where: BroadcasterWhereUniqueInput!): Broadcaster
   song(where: SongWhereUniqueInput!): Song
   queueSong(where: QueueSongWhereUniqueInput!): QueueSong
   user(where: UserWhereUniqueInput!): User
+  feedback(where: FeedbackWhereUniqueInput!): Feedback
   broadcastersConnection(where: BroadcasterWhereInput, orderBy: BroadcasterOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BroadcasterConnection!
   songsConnection(where: SongWhereInput, orderBy: SongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SongConnection!
   queueSongsConnection(where: QueueSongWhereInput, orderBy: QueueSongOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): QueueSongConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  feedbacksConnection(where: FeedbackWhereInput, orderBy: FeedbackOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FeedbackConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -1755,6 +2116,7 @@ type Subscription {
   song(where: SongSubscriptionWhereInput): SongSubscriptionPayload
   queueSong(where: QueueSongSubscriptionWhereInput): QueueSongSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  feedback(where: FeedbackSubscriptionWhereInput): FeedbackSubscriptionPayload
 }
 
 type User implements Node {

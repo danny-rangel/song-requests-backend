@@ -33,6 +33,7 @@ type Mutation {
         bitPriority: BitPriorityType!
         oneRequestPerUser: Boolean!
     ): Broadcaster!
+    createFeedback(content: String!): Feedback!
 }
 
 # type Subscription {
@@ -93,6 +94,14 @@ type QueueSong {
     requestedBy: String!
     broadcaster: Broadcaster!
     song: Song!
+}
+
+type Feedback {
+    id: ID!
+    userId: String!
+    username: String!
+    content: String!
+    createdAt: DateTime!
 }
 
 enum MutationType {

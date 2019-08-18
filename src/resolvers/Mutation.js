@@ -421,6 +421,31 @@ const Mutation = {
         }
 
         return res;
+    },
+    async createFeedback(parent, { content }, { prisma, request }, info) {
+        const { userInfo, token } = getUserInfo(request);
+
+        if (!userInfo.hasSharedId) {
+            throw new Error('You must be logged in!');
+        }
+
+        const res = await axios.get(
+            `https://api.twitch.tv/helix/users?id=${userInfo.user_id}`,
+            {
+                headers: {
+                    'Client-ID': process.env.CLIENT_ID
+                }
+            }
+        );
+
+        return prisma.mutation.createFeedback({
+            data: {
+                userId: userInfo.user_id,
+                username: res.data.data[0].display_name,
+                channelId: userInfo.channel_id,
+                content
+            }
+        });
     }
 };
 

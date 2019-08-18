@@ -46,6 +46,15 @@ type User {
   role: String!
 }
 
+type Feedback {
+  id: ID! @id
+  userId: String!
+  username: String!
+  channelId: String!
+  content: String!
+  createdAt: DateTime! @createdAt
+}
+
 enum BitPriorityType {
     TIME
     AMOUNT
